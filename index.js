@@ -1,13 +1,33 @@
-require('dotenv').config();
-var mysql = require("mysql2");
+require('dotenv').config()
 
-var con = mysql.createConnection({
-   host: process.env.DB_HOST,
-   user: process.env.DB_USERNAME,
-   password: process.env.DB_PASSWORD
-});
+const dbHelper = require('./dbHelper.js')
+const con = dbHelper.con
 
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
+con.connect(function (err) {
+  if (err) throw err
+  console.log('Connected!')
+})
+
+try {
+  dbHelper.insertUser(
+    'user5',
+    'password5',
+    1620000000,
+    '2000-01-05',
+    'Description for user5',
+    'Location for user5'
+  );
+} catch (e) {
+  console.error(e)
+}
+
+dbHelper.removeUser('user5')
+dbHelper.insertUser(
+  'user5',
+  'password5',
+  1620000000,
+  '2000-01-05',
+  'Description for user5',
+  'Location for user5'
+)
+dbHelper.query('SELECT * FROM USER')
