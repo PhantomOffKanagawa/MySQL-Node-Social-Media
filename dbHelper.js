@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 const mysql2 = require('mysql2')
 
 const con = mysql2.createConnection({
@@ -24,9 +28,9 @@ function insertUser (
     Location: location
   }
   con.query('INSERT INTO USER SET ?', user, function (err, result) {
-    if (err) return false;
-    console.log('Result: ' + JSON.stringify(result[0]));
-    return true;
+    if (err) return false
+    console.log('Result: ' + JSON.stringify(result[0]))
+    return true
   })
 }
 
@@ -45,7 +49,7 @@ function query (query) {
   con.query(query, function (err, result) {
     if (err) throw err
     console.log('Result:')
-    for (obj of result) {
+    for (let obj of result) {
       console.log(JSON.stringify(obj))
     }
   })
