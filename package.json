@@ -1,0 +1,18 @@
+{
+  "name": "phase-3",
+  "version": "1.0.0",
+  "description": "node frontend for phase 3 of CMP_SC 3380",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "htsbn8",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "mysql2": "^3.2.3"
+  }
+}
