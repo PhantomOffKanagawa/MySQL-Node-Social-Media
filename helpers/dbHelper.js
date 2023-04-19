@@ -11,16 +11,8 @@ const mediaConnection = mysql2.createConnection({
   database: 'socialMedia'
 });
 
-// const userConnection = mysql2.createConnection({
-//   host: process.env.DB_HOST,
-//   user: process.env.DB_USERNAME,
-//   password: process.env.DB_PASSWORD,
-//   database: 'cookie_user'
-// });
-
 function insertUser (
   username,
-  password,
   createdTime,
   birthday,
   description,
@@ -30,13 +22,12 @@ function insertUser (
 ) {
   const user = {
     Username: username,
-    Password: password,
     CreatedTime: createdTime,
     Birthday: birthday,
     Description: description,
     Location: location,
-    hash: hash,
-    salt: salt
+    Hash: hash,
+    Salt: salt
   }
   mediaConnection.query('INSERT INTO USER SET ?', user, function (err, result) {
     if (err) return false

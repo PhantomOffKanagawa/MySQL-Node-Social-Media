@@ -4,14 +4,12 @@ use socialMedia;
 
 create table USER ( -- Simple Table
 	Username varchar(255), -- pk
-	Password varchar(255), 
-	CreatedTime int,
+	CreatedTime varchar(26),
     Birthday date,
     Description varchar(255),
     Location varchar(255),
-    hash varchar(200),
-    salt varchar(100),
-    isAdmin tinyint(4),
+    Hash varchar(200),
+    Salt varchar(100),
 	primary key (Username)
 );
 

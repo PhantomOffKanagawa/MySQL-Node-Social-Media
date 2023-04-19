@@ -3,27 +3,26 @@ const crypto = require('crypto');
 const LocalStrategy = require('passport-local').Strategy;
 const dbHelper = require('../helpers/dbHelper');
 
+// Helper Callback that references the database to return
 const verifyCallback = (username, password, done) => {
   dbHelper.mediaConnection.query(
     'SELECT * FROM USER WHERE Username = ? ',
     [username],
     function (error, results, fields) {
-      if (error) return done(error)
+      // If error or no user found return error/null
+      if (error) return done(error);
+      if (results.length == 0) return done(null, false);
 
-      if (results.length == 0) {
-        return done(null, false)
-      }
-      const isValid = validPassword(password, results[0].hash, results[0].salt)
+      const isValid = validPassword(password, results[0].Hash, results[0].Salt);
       user = {
-        // id: results[0].id,
         username: results[0].Username,
         hash: results[0].hash,
         salt: results[0].salt
-      }
+      };
       if (isValid) {
-        return done(null, user)
+        return done(null, user);
       } else {
-        return done(null, false)
+        return done(null, false);
       }
     }
   )
@@ -34,20 +33,22 @@ const customFields={
   passwordField:'password',
 };
 
-const strategy = new LocalStrategy(customFields, verifyCallback)
-passport.use(strategy)
+// Registers the strategy to passport
+const strategy = new LocalStrategy(customFields, verifyCallback);
+passport.use(strategy);
 
+// Registers function to serialize the user to print out user
 passport.serializeUser((user, done) => {
-  console.log('inside serialize' + JSON.stringify(user));
-  // done(null, user.id)
-  done(null, user.username)
+  console.log('serializeUser ' + JSON.stringify(user));
+  done(null, user.username);
 })
 
-passport.deserializeUser(function (userId, done) {
-  console.log('deserializeUser' + userId)
+// Registers function to deserialize user info by getting from db
+passport.deserializeUser(function (username, done) {
+  console.log('deserializeUser ' + username);
   dbHelper.mediaConnection.query(
     'SELECT * FROM USER where Username = ?',
-    [userId],
+    [username],
     function (error, results) {
       done(null, results[0])
     }
@@ -55,7 +56,10 @@ passport.deserializeUser(function (userId, done) {
 })
 
 // Helpers
+//
+//
 
+// Helper that checks if a provided password attempt matches the previous hash
 function validPassword (password, hash, salt) {
   var hashVerify = crypto
     .pbkdf2Sync(password, salt, 10000, 60, 'sha512')
