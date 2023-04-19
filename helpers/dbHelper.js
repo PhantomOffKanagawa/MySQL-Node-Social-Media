@@ -4,12 +4,19 @@ if (process.env.NODE_ENV !== 'production') {
 
 const mysql2 = require('mysql2')
 
-const con = mysql2.createConnection({
+const mediaConnection = mysql2.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: 'socialMedia'
-})
+});
+
+// const userConnection = mysql2.createConnection({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USERNAME,
+//   password: process.env.DB_PASSWORD,
+//   database: 'cookie_user'
+// });
 
 function insertUser (
   username,
@@ -17,7 +24,9 @@ function insertUser (
   createdTime,
   birthday,
   description,
-  location
+  location,
+  hash,
+  salt
 ) {
   const user = {
     Username: username,
@@ -25,9 +34,11 @@ function insertUser (
     CreatedTime: createdTime,
     Birthday: birthday,
     Description: description,
-    Location: location
+    Location: location,
+    hash: hash,
+    salt: salt
   }
-  con.query('INSERT INTO USER SET ?', user, function (err, result) {
+  mediaConnection.query('INSERT INTO USER SET ?', user, function (err, result) {
     if (err) return false
     console.log('Result: ' + JSON.stringify(result[0]))
     return true
@@ -35,7 +46,7 @@ function insertUser (
 }
 
 function removeUser (username) {
-  con.query(
+  mediaConnection.query(
     'DELETE FROM USER WHERE Username = ?',
     [username],
     function (err, result) {
@@ -46,7 +57,7 @@ function removeUser (username) {
 }
 
 function query (query) {
-  con.query(query, function (err, result) {
+  mediaConnection.query(query, function (err, result) {
     if (err) throw err
     console.log('Result:')
     for (let obj of result) {
@@ -55,4 +66,4 @@ function query (query) {
   })
 }
 
-module.exports = { con, insertUser, removeUser, query }
+module.exports = { mediaConnection, insertUser, removeUser, query }

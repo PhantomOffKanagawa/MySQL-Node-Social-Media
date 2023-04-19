@@ -2,7 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
   }
 
-const dbHelper = require('./dbHelper.js')
+const dbHelper = require('./helpers/dbHelper.js')
 const con = dbHelper.con
 
 con.connect(function (err) {
