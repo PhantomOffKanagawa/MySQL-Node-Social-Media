@@ -1,35 +1,52 @@
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config()
-  }
+const crypto = require('crypto');
+const mysql = require('mysql2');
 
-const dbHelper = require('./helpers/dbHelper.js')
-const con = dbHelper.con
+const express = require('express');
+const app = express();
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const expressLayouts = require('express-ejs-layouts');
 
-con.connect(function (err) {
-  if (err) throw err
-  console.log('Connected!')
-})
+require('dotenv').config();
 
-try {
-  dbHelper.insertUser(
-    'user5',
-    'password5',
-    1620000000,
-    '2000-01-05',
-    'Description for user5',
-    'Location for user5'
-  );
-} catch (e) {
-  console.error(e)
-}
+const dbHelper = require('./helpers/dbHelper')
+const routes = require('./routes/router')
 
-dbHelper.removeUser('user5')
-dbHelper.insertUser(
-  'user5',
-  'password5',
-  1620000000,
-  '2000-01-05',
-  'Description for user5',
-  'Location for user5'
+
+// Middlewear and Express setup
+// Cookie setup
+app.use(
+  session({
+    key: process.env.COOKIE_KEY,
+    secret: process.env.COOKIE_SECRET,
+    store: new MySQLStore({}, dbHelper.mediaConnection),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24
+    }
+  })
 )
-dbHelper.query('SELECT * FROM USER')
+
+// Use express layouts based on created default layout
+app.use(expressLayouts);
+app.set('layout', './layouts/default');
+
+app.use(express.urlencoded({ extended: false }));
+
+// Use ejs view engine
+app.set('view engine', 'ejs');
+
+// Use routes file for GET / POST
+app.use(routes)
+
+// app.use((req,res,next)=>{
+//   console.log(req.session);
+//   console.log(req.user);
+//   next();
+// });
+
+// Start up Express server
+const server = app.listen(3000, () => {
+  console.log(`Listening on port ${server.address().port}`)
+})
