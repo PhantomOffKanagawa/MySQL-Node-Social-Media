@@ -1,9 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const dbHelper = require('../helpers/dbHelper');
-const passport = require('../helpers/passportHelper');
-const crypto = require('crypto');
-
+const express = require('express')
+const router = express.Router()
+const dbHelper = require('../helpers/dbHelper')
+const passport = require('../helpers/passportHelper')
+const crypto = require('crypto')
 
 router.use(passport.initialize())
 router.use(passport.session())
@@ -18,22 +17,28 @@ router.get('/', (req, res) => {
 })
 
 // Page to Login
-router.get('/login', (req, res) => {
+router.get('/login', isNotAuth, (req, res) => {
   res.render('login', { title: 'Login' })
 })
 
 // Page to Logout
 router.get('/logout', (req, res) => {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('/');
-  });
+  req.logout(function (err) {
+    if (err) {
+      return next(err)
+    }
+    res.redirect('/')
+  })
+})
+
+router.get('/myaccount', isAuth, (req, res, next) => {
+  res.render('account', { title: 'My Account', username: req.session.passport.user })
 })
 
 // Directed page on success
 router.get('/login-success', (req, res, next) => {
   res.send(
-    '<p>You successfully logged in. --> <a href="/protected-route">Go to protected route</a></p>'
+    '<p>You successfully logged in. --> <a href="/myaccount">Go to your account</a></p>'
   )
 })
 
@@ -43,29 +48,32 @@ router.get('/login-failure', (req, res, next) => {
 })
 
 // Page to register
-router.get('/register', (req, res, next) => {
+router.get('/register', isNotAuth, (req, res, next) => {
   res.render('register', { title: 'Register' })
 })
 
 // Page requiring authentication
-router.get('/protected-route',isAuth,(req, res, next) => {
- 
-  res.send('<h1>You are authenticated</h1><p><a href="/logout">Logout and reload</a></p>');
-});
+router.get('/protected-route', isAuth, (req, res, next) => {
+  res.send(
+    '<h1>You are authenticated</h1><p><a href="/logout">Logout and reload</a></p>'
+  )
+})
 
 // Page shown on failure to be authenticated where needed
 router.get('/notAuthorized', (req, res, next) => {
-  console.log("Inside get");
-  res.send('<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>');
-  
-});
+  console.log('Inside get')
+  res.send(
+    '<h1>You are not authorized to view the resource </h1><p><a href="/login">Retry Login</a></p>'
+  )
+})
 
 // Page shown when trying to register existing username
 router.get('/userAlreadyExists', (req, res, next) => {
-  console.log("Inside get");
-  res.send('<h1>Sorry This username is taken </h1><p><a href="/register">Register with different username</a></p>');
-  
-});
+  console.log('Inside get')
+  res.send(
+    '<h1>Sorry This username is taken </h1><p><a href="/register">Register with different username</a></p>'
+  )
+})
 
 // POST Routes
 //
@@ -83,30 +91,44 @@ router.post('/register', userExists, (req, res, next) => {
   dbHelper.insertUser(
     req.body.username,
     new Date().toISOString(),
-    '2000-01-05',
-    'Description for user5',
-    'Location for user5',
+    null,
+    null,
+    null,
     hash,
     saltHash.salt
   )
-  
+
   res.redirect('/login')
 })
 
 // Handle Login attempts
-router.post(
-  '/login',
-  passport.authenticate('local', {
-    failureRedirect: '/login-failure',
-    successRedirect: '/login-success'
-  })
-)
+// router.post('/login', function (req, res, next) {
+//   passport.authenticate('local', function (err, user, info) {
+//     if (err) {
+//       return next(err)
+//     }
+
+//     if (!user) {
+//       return res.redirect("/login-fail");
+//     }
+
+//     console.log(req.isAuthenticated());
+//     // req.session.username = req.body.username;
+//     req.logIn(user);
+//     res.redirect("/login-success");
+//   })(req, res, next)
+// })
+
+router.post('/login', passport.authenticate('local', {
+  successRedirect: "/login-success",
+  failureRedirect: "/login-failed"
+}));
 
 // Helpers
 //
 //
 
-// Helper to check if a username is already in use 
+// Helper to check if a username is already in use
 function userExists (req, res, next) {
   dbHelper.mediaConnection.query(
     'Select * from USER where Username=? ',
@@ -140,5 +162,15 @@ function isAuth (req, res, next) {
     res.redirect('/notAuthorized')
   }
 }
+
+// Helper to check if a user is not logged in
+function isNotAuth (req, res, next) {
+  if (!req.isAuthenticated()) {
+    next()
+  } else {
+    res.redirect('/myaccount')
+  }
+}
+
 
 module.exports = router

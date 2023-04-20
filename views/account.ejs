@@ -1,35 +1,100 @@
-<div class="px-4 py-5 my-5 text-center">
-  <img
-    class="d-block mx-auto mb-4"
-    src="https://uilogos.co/img/logomark/u-mark.png"
-    alt=""
-    width="auto"
-    height="150"
-  />
-  <h1 class="display-5 fw-bold">Login Here</h1>
-  <div class="col-lg-3 mx-auto">
-    <form action="/login" method="POST">
-      <div class="mb-2">
-        <label for="username" class="form-label">Username</label>
-        <input
-          type="text"
-          class="form-control"
-          name="username"
-          placeholder="Username"
-          required
-        />
+<section style="background-color: #eee;">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">User</a></li> -->
+            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+          </ol>
+        </nav>
       </div>
-      <div class="mb-2">
-        <label for="password" class="form-label">Password</label>
-        <input
-          type="password"
-          class="form-control"
-          name="password"
-          placeholder="Password"
-          required
-        />
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <h5 class="my-3"><%= username%></h5>
+            <p class="text-muted mb-1">Full Stack Developer</p>
+            <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+          </div>
+        </div>
+        <div class="card mb-4 mb-lg-0">
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush rounded-3">
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <i class="fas fa-globe fa-lg text-warning"></i>
+                <p class="mb-0">https://link1.com</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                <p class="mb-0">https://link2.com</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
+                <p class="mb-0">https://link3.com</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                <p class="mb-0">https://link4.com</p>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
+                <p class="mb-0">https://link5.com</p>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary mt-2">Submit</button>
-    </form>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Username</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= username%></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Location</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Description</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                  ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+                  voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+  <footer class="bg-light text-center ">
+    <!-- Grid container -->
+    <div class="container p-4">
+  
+      <button type="button" class="btn btn-outline-danger    " data-mdb-ripple-color="#000000"> Logout </button>
+      <button type="button" class="btn btn-outline-warning  btn-floating  " data-mdb-ripple-color="#ffffff"> <i class="fas fa-edit"></i> </button>
+  
+    </div>
+    <!-- Grid container -->
+  
+  </footer>
+</section>
+<script src="./account.js"></script>
