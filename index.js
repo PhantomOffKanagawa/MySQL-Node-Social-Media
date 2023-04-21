@@ -7,11 +7,6 @@ const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session)
 const expressLayouts = require('express-ejs-layouts')
 
-const server = require('http').createServer(app)
-const io = require('socket.io')(server)
-
-const socketHelper = require('./helpers/socketHelper')(io)
-
 require('dotenv').config()
 
 const dbHelper = require('./helpers/dbHelper')
@@ -31,8 +26,6 @@ const sessionMiddleware = session({
 })
 
 app.use(sessionMiddleware)
-
-io.engine.use(sessionMiddleware)
 
 // Serve files under static folder as static
 app.use(express.static('static'))
@@ -56,6 +49,6 @@ app.use(routes)
 // });
 
 // Start up Express server
-const expressServer = server.listen(3000, () => {
-  console.log(`Listening on port ${expressServer.address().port}`)
+const server = app.listen(3000, () => {
+  console.log(`Listening on port ${server.address().port}`)
 })

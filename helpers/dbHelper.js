@@ -11,7 +11,7 @@ const mediaConnection = mysql2.createConnection({
   database: 'socialMedia'
 })
 
-function insertUser (
+function insertUser(
   username,
   createdTime,
   birthday,
@@ -36,7 +36,7 @@ function insertUser (
   })
 }
 
-function removeUser (username) {
+function removeUser(username) {
   mediaConnection.query(
     'DELETE FROM USER WHERE Username = ?',
     [username],
@@ -47,12 +47,12 @@ function removeUser (username) {
   )
 }
 
-function updateUser (username, birthday, description, location) {
+function updateUser(username, birthday, description, location) {
   var updateString = [
-    birthday != '' ? `Birthday='${birthday}'` : '',
-    description != '' ? `Description='${description}'` : '',
-    location != '' ? `Location='${location}'` : ''
-  ]
+      birthday != '' ? `Birthday='${birthday}'` : '',
+      description != '' ? `Description='${description}'` : '',
+      location != '' ? `Location='${location}'` : ''
+    ]
     .filter(Boolean)
     .join(', ')
   // console.log(updateString)
@@ -68,7 +68,7 @@ function updateUser (username, birthday, description, location) {
   )
 }
 
-function addLink (username, linkStr) {
+function addLink(username, linkStr) {
   const link = {
     Username: username,
     Link: linkStr
@@ -80,7 +80,7 @@ function addLink (username, linkStr) {
   })
 }
 
-function removeLink (username, linkStr) {
+function removeLink(username, linkStr) {
   mediaConnection.query(
     'DELETE FROM ExternalLinks WHERE Link = ? and Username = ?',
     [linkStr, username],
@@ -91,7 +91,29 @@ function removeLink (username, linkStr) {
   )
 }
 
-function query (query) {
+function newPost(
+  contents,
+  createdTime,
+  posterUsername,
+  shortLinkID
+) {
+  const post = {
+    Contents: contents,
+    CreatedTime: createdTime,
+    PosterUsername: posterUsername,
+    ShortLinkID: shortLinkID
+  }
+  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
+    if (err) console.log(err)
+    else {
+      console.log('Result: ' + JSON.stringify(result[0]));
+      return true
+    }
+  })
+  console.log("newpost");
+}
+
+function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err
     console.log('Result:')
@@ -101,4 +123,13 @@ function query (query) {
   })
 }
 
-module.exports = { mediaConnection, insertUser, removeUser, updateUser, addLink, removeLink, query }
+module.exports = {
+  mediaConnection,
+  insertUser,
+  removeUser,
+  updateUser,
+  addLink,
+  removeLink,
+  newPost,
+  query
+}

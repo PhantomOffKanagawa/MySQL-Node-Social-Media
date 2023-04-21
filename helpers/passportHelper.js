@@ -39,13 +39,13 @@ passport.use(strategy);
 
 // Registers function to serialize the user to print out user
 passport.serializeUser((user, done) => {
-  console.log('serializeUser ' + JSON.stringify(user));
+  // console.log('serializeUser ' + JSON.stringify(user));
   done(null, user.username);
 })
 
 // Registers function to deserialize user info by getting from db
 passport.deserializeUser(function (username, done) {
-  console.log('deserializeUser ' + username);
+  // console.log('deserializeUser ' + username); Why does this call so often?
   dbHelper.mediaConnection.query(
     'SELECT * FROM USER where Username = ?',
     [username],

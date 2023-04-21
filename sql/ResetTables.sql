@@ -4,86 +4,86 @@ use socialMedia;
 
 create table USER ( -- Simple Table
 	Username varchar(255) not null, -- pk
-	CreatedTime varchar(26),
+	CreatedTime varchar(26) not null,
     Birthday date,
     Description varchar(255),
     Location varchar(255),
-    Hash varchar(200),
-    Salt varchar(100),
+    Hash varchar(200) not null,
+    Salt varchar(100) not null,
 	primary key (Username)
 );
 
 create table ExternalLinks ( -- Multi-value Attribute
     Username varchar(255) not null, -- fk
-    Link varchar(40) unique,
+    Link varchar(40) unique not null,
     FOREIGN KEY (Username) REFERENCES USER(Username)
 );
 
 create table URLSHORTENER ( -- Simple Table
-    UUID varchar(20), -- pk
-    OriginalURL varchar(255),
-    ShortenedURL varchar(40),
-    PRIMARY KEY (UUID)
+    ID int NOT NULL AUTO_INCREMENT, -- pk
+    OriginalURL varchar(255) not null,
+    ShortenedURL varchar(40) not null,
+    PRIMARY KEY (ID)
 );
 
 create table HASHTAG ( -- Simple Table
-    Tag varchar(20), -- pk
+    Tag varchar(20) not null, -- pk
     PRIMARY KEY (Tag)
 );
 
 CREATE TABLE POST ( -- Compound Table
-    UUID varchar(20), -- pk
-    Contents VARCHAR(255),
-    CreatedTime INT,
-    PosterUsername VARCHAR(255), -- fk
-    ShortLinkUUID VARCHAR(255), -- optional fk
-    primary key (UUID),
+    ID int NOT NULL AUTO_INCREMENT, -- pk
+    Contents VARCHAR(255) not null,
+    CreatedTime varchar(26) not null,
+    PosterUsername VARCHAR(255) not null, -- fk
+    ShortLinkID int, -- optional fk
+    primary key (ID),
     foreign key (PosterUsername) REFERENCES USER(Username),
-    FOREIGN KEY (ShortLinkUUID) REFERENCES URLSHORTENER(UUID)
+    FOREIGN KEY (ShortLinkID) REFERENCES URLSHORTENER(ID)
 );
 
 CREATE TABLE POLL ( -- Compound Table
-    PostUUID varchar(20), -- fk
-    Title varchar(40),
-    Option1Text varchar(40),
-    Option2Text varchar(40),
-    FOREIGN KEY (PostUUID) REFERENCES POST(UUID)
+    PostID int not null, -- fk
+    Title varchar(40) not null,
+    Option1Text varchar(40) not null,
+    Option2Text varchar(40) not null,
+    FOREIGN KEY (PostID) REFERENCES POST(ID)
 );
 
  -- Only one trending tag or now 
 CREATE TABLE TRENDING ( -- Compound Table
-    StartTime int, -- pk
-    Tag varchar(20),
-    Lifespan int,
+    StartTime int not null, -- pk
+    Tag varchar(20) not null,
+    Lifespan int not null,
     PRIMARY KEY (StartTime), 
     FOREIGN KEY (Tag) References HASHTAG(Tag) 
 );
 
 CREATE TABLE Likes ( -- Reference
-    Username varchar(255), -- fk
-    PostUUID varchar(20), -- fk
+    Username varchar(255) not null, -- fk
+    PostID int not null, -- fk
     foreign key (Username) REFERENCES USER(Username),
-    FOREIGN KEY (PostUUID) REFERENCES POST(UUID)
+    FOREIGN KEY (PostID) REFERENCES POST(ID)
 );
 
 CREATE TABLE Replies ( -- Reference
-    ReplyPostUUID varchar(20), -- fk
-    OriginalPostUUID varchar(20), -- fk
-    FOREIGN KEY (ReplyPostUUID) REFERENCES POST(UUID),
-    FOREIGN KEY (OriginalPostUUID) REFERENCES POST(UUID)
+    ReplyPostID int not null, -- fk
+    OriginalPostID int not null, -- fk
+    FOREIGN KEY (ReplyPostID) REFERENCES POST(ID),
+    FOREIGN KEY (OriginalPostID) REFERENCES POST(ID)
 );
 
 CREATE TABLE Vote ( -- Reference
-    Username varchar(255), -- fk
-    PostUUID varchar(20), -- fk
-    Choice int,
+    Username varchar(255) not null, -- fk
+    PostID int not null, -- fk
+    Choice int not null,
     foreign key (Username) REFERENCES USER(Username),
-    FOREIGN KEY (PostUUID) REFERENCES POST(UUID)
+    FOREIGN KEY (PostID) REFERENCES POST(ID)
 );
 
 CREATE TABLE IncludesTag ( -- Reference
-    PostUUID varchar(20), -- fk
-    Tag char(20), -- fk
-    FOREIGN KEY (PostUUID) REFERENCES POST(UUID),
+    PostID int not null, -- fk
+    Tag varchar(20) not null, -- fk
+    FOREIGN KEY (PostID) REFERENCES POST(ID),
     FOREIGN KEY (Tag) REFERENCES HASHTAG(Tag)
 );

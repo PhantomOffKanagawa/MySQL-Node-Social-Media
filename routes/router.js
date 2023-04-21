@@ -37,7 +37,7 @@ router.get('/logout', (req, res) => {
 
 router.get('/myaccount', isAuth, (req, res, next) => {
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ' + req.session.passport.user,
+    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.session.passport.user,
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -57,13 +57,14 @@ router.get('/myaccount', isAuth, (req, res, next) => {
 router.get('/account/:username', (req, res, next) => {
   console.log("The parameter is: " + req.params.username);
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ' + req.params.username,
+    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.params.username,
     (err, rows) => {
       if (err) {
         console.error(err)
         res.send("Username not found")
-      }
-      if (!err) {
+      } else if (rows.length == 0) {
+        res.send("Username not found")
+      } else {
         res.render('account', {
           title: req.params.username + '\'s Account',
           rows: JSON.stringify(rows),
@@ -173,6 +174,12 @@ router.post('/linkadd', isAuth, (req, res, next) => {
 
 router.post('/linkremove', (req, res, next) => {
   dbHelper.removeLink(req.session.passport.user, req.body.link);
+
+  res.redirect('/myaccount');
+});
+
+router.post('/newpost', (req, res, next) => {
+  dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user);
 
   res.redirect('/myaccount');
 });

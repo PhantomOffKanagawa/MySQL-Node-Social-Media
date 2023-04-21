@@ -1,0 +1,43 @@
+<div id="post-creator-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="/newpost" method="POST">
+                    <fieldset>
+                        <div class="form-group mb-4 position-relative">
+                            <label class="control-label" for="contents">Post Contents</label>
+                            <div class="">
+                                <textarea class="form-control mb-1" id="contents" name="contents"
+                                    placeholder="Enter the post here... (255 character limit)"
+                                    maxlength="255"></textarea>
+                                <span class="help-block text-muted position-absolute end-0" id="charRemaining">0/255</span>
+                            </div>
+                        </div>
+
+                        <!-- Button (Double) -->
+                        <div class="form-group mb-1 mt-4">
+                            <div class="">
+                                <input type="submit" id="submit" name="submit" class="btn btn-success" />
+                                <button id="cancel" name="cancel" class="btn btn-inverse" data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#contents').keyup(function () {
+            $("#charRemaining").html(`${this.value.length}/255`);
+        })
+    });
+</script>
