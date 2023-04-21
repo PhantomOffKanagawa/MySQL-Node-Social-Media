@@ -9,7 +9,7 @@ const mediaConnection = mysql2.createConnection({
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: 'socialMedia'
-});
+})
 
 function insertUser (
   username,
@@ -41,8 +41,52 @@ function removeUser (username) {
     'DELETE FROM USER WHERE Username = ?',
     [username],
     function (err, result) {
-      if (err) throw err
+      if (err) console.log(err.message)
       console.log('Result: ' + JSON.stringify(result[0]))
+    }
+  )
+}
+
+function updateUser (username, birthday, description, location) {
+  var updateString = [
+    birthday != '' ? `Birthday='${birthday}'` : '',
+    description != '' ? `Description='${description}'` : '',
+    location != '' ? `Location='${location}'` : ''
+  ]
+    .filter(Boolean)
+    .join(', ')
+  // console.log(updateString)
+  if (updateString == '') return
+  mediaConnection.query(
+    'UPDATE USER SET ' + updateString + ' WHERE Username=?',
+    username,
+    function (err, result) {
+      if (err) console.log(err.message)
+      // console.log('Result: ' + JSON.stringify(result[0]));
+      return true
+    }
+  )
+}
+
+function addLink (username, linkStr) {
+  const link = {
+    Username: username,
+    Link: linkStr
+  }
+  mediaConnection.query('INSERT INTO ExternalLinks SET ?', link, function (err, result) {
+    if (err) return false
+    console.log('Result: ' + JSON.stringify(result[0]))
+    return true
+  })
+}
+
+function removeLink (username, linkStr) {
+  mediaConnection.query(
+    'DELETE FROM ExternalLinks WHERE Link = ? and Username = ?',
+    [linkStr, username],
+    function (err, result) {
+      if (err) console.log(err.message)
+      console.log('Result: ' + JSON.stringify(result))
     }
   )
 }
@@ -57,4 +101,4 @@ function query (query) {
   })
 }
 
-module.exports = { mediaConnection, insertUser, removeUser, query }
+module.exports = { mediaConnection, insertUser, removeUser, updateUser, addLink, removeLink, query }

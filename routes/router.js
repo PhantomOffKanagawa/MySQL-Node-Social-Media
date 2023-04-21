@@ -13,12 +13,16 @@ router.use(passport.session())
 
 // Landing Page
 router.get('/', (req, res) => {
-  res.render('index.ejs', { title: 'Home' })
+  res.render('index.ejs', {
+    title: 'Home'
+  })
 })
 
 // Page to Login
 router.get('/login', isNotAuth, (req, res) => {
-  res.render('login', { title: 'Login' })
+  res.render('login', {
+    title: 'Login'
+  })
 })
 
 // Page to Logout
@@ -32,14 +36,52 @@ router.get('/logout', (req, res) => {
 })
 
 router.get('/myaccount', isAuth, (req, res, next) => {
-  res.render('account', { title: 'My Account', username: req.session.passport.user })
+  dbHelper.mediaConnection.query(
+    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ' + req.session.passport.user,
+    (err, rows) => {
+      if (err) throw console.error(err)
+      if (!err) {
+        // console.log(rows)
+        res.render('account', {
+          title: 'My Account',
+          rows: JSON.stringify(rows),
+          user: JSON.stringify(rows[0]),
+          username: rows[0].Username,
+          editable: true
+        })
+      }
+    }
+  )
+})
+
+router.get('/account/:username', (req, res, next) => {
+  console.log("The parameter is: " + req.params.username);
+  dbHelper.mediaConnection.query(
+    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ' + req.params.username,
+    (err, rows) => {
+      if (err) {
+        console.error(err)
+        res.send("Username not found")
+      }
+      if (!err) {
+        res.render('account', {
+          title: req.params.username + '\'s Account',
+          rows: JSON.stringify(rows),
+          user: JSON.stringify(rows[0]),
+          username: rows[0].Username,
+          editable: (req.params.username == req.session.passport.user)
+        })
+      }
+    }
+  )
 })
 
 // Directed page on success
 router.get('/login-success', (req, res, next) => {
-  res.send(
-    '<p>You successfully logged in. --> <a href="/myaccount">Go to your account</a></p>'
-  )
+  // res.send(
+  //   '<p>You successfully logged in. --> <a href="/myaccount">Go to your account</a></p>'
+  // )
+  res.redirect("/myaccount")
 })
 
 // Directed page on failure
@@ -49,7 +91,9 @@ router.get('/login-failure', (req, res, next) => {
 
 // Page to register
 router.get('/register', isNotAuth, (req, res, next) => {
-  res.render('register', { title: 'Register' })
+  res.render('register', {
+    title: 'Register'
+  })
 })
 
 // Page requiring authentication
@@ -81,12 +125,12 @@ router.get('/userAlreadyExists', (req, res, next) => {
 
 // Handle registration
 router.post('/register', userExists, (req, res, next) => {
-  console.log('Inside post Salt:')
+  // console.log('Inside post Salt:')
   const saltHash = genPassword(req.body.password)
-  console.log(saltHash)
+  // console.log(saltHash)
   const salt = saltHash.salt
   const hash = saltHash.hash
-  console.log(typeof salt)
+  // console.log(typeof salt)
 
   dbHelper.insertUser(
     req.body.username,
@@ -101,35 +145,44 @@ router.post('/register', userExists, (req, res, next) => {
   res.redirect('/login')
 })
 
-// Handle Login attempts
-// router.post('/login', function (req, res, next) {
-//   passport.authenticate('local', function (err, user, info) {
-//     if (err) {
-//       return next(err)
-//     }
+router.post(
+  '/login',
+  passport.authenticate('local', {
+    successRedirect: '/login-success',
+    failureRedirect: '/login-failed'
+  })
+)
 
-//     if (!user) {
-//       return res.redirect("/login-fail");
-//     }
 
-//     console.log(req.isAuthenticated());
-//     // req.session.username = req.body.username;
-//     req.logIn(user);
-//     res.redirect("/login-success");
-//   })(req, res, next)
-// })
+router.post('/myaccount', isAuth, (req, res, next) => {
+  const birthday = req.body.birthday;
+  const location = req.body.location;
+  const description = req.body.description;
+  const username = req.session.passport.user;
 
-router.post('/login', passport.authenticate('local', {
-  successRedirect: "/login-success",
-  failureRedirect: "/login-failed"
-}));
+  dbHelper.updateUser(username, birthday, description, location);
+
+  res.redirect('/myaccount');
+})
+
+router.post('/linkadd', isAuth, (req, res, next) => {
+  dbHelper.addLink(req.session.passport.user, req.body.link);
+
+  res.redirect('/myaccount');
+});
+
+router.post('/linkremove', (req, res, next) => {
+  dbHelper.removeLink(req.session.passport.user, req.body.link);
+
+  res.redirect('/myaccount');
+});
 
 // Helpers
 //
 //
 
 // Helper to check if a username is already in use
-function userExists (req, res, next) {
+function userExists(req, res, next) {
   dbHelper.mediaConnection.query(
     'Select * from USER where Username=? ',
     [req.body.username],
@@ -146,16 +199,19 @@ function userExists (req, res, next) {
 }
 
 // Helper to generate encrypted passwords
-function genPassword (password) {
+function genPassword(password) {
   var salt = crypto.randomBytes(32).toString('hex')
   var genhash = crypto
     .pbkdf2Sync(password, salt, 10000, 60, 'sha512')
     .toString('hex')
-  return { salt: salt, hash: genhash }
+  return {
+    salt: salt,
+    hash: genhash
+  }
 }
 
 // Helper to check if a user is logged in
-function isAuth (req, res, next) {
+function isAuth(req, res, next) {
   if (req.isAuthenticated()) {
     next()
   } else {
@@ -164,13 +220,12 @@ function isAuth (req, res, next) {
 }
 
 // Helper to check if a user is not logged in
-function isNotAuth (req, res, next) {
+function isNotAuth(req, res, next) {
   if (!req.isAuthenticated()) {
     next()
   } else {
     res.redirect('/myaccount')
   }
 }
-
 
 module.exports = router

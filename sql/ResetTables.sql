@@ -3,7 +3,7 @@ create database socialMedia;
 use socialMedia;
 
 create table USER ( -- Simple Table
-	Username varchar(255), -- pk
+	Username varchar(255) not null, -- pk
 	CreatedTime varchar(26),
     Birthday date,
     Description varchar(255),
@@ -14,8 +14,8 @@ create table USER ( -- Simple Table
 );
 
 create table ExternalLinks ( -- Multi-value Attribute
-    Username varchar(255), -- fk
-    Link varchar(40),
+    Username varchar(255) not null, -- fk
+    Link varchar(40) unique,
     FOREIGN KEY (Username) REFERENCES USER(Username)
 );
 

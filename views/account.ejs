@@ -1,4 +1,4 @@
-<section style="background-color: #eee;">
+<section class="vh-100 vw-100" style="background-color: #eee">
   <div class="container py-5">
     <div class="row">
       <div class="col">
@@ -6,7 +6,9 @@
           <ol class="breadcrumb mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">User</a></li> -->
-            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+            <li class="breadcrumb-item active" aria-current="page">
+              User Profile
+            </li>
           </ol>
         </nav>
       </div>
@@ -17,33 +19,17 @@
         <div class="card mb-4">
           <div class="card-body text-center">
             <h5 class="my-3"><%= username%></h5>
-            <p class="text-muted mb-1">Full Stack Developer</p>
-            <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+            <p class="text-muted mb-4 editable" id="locationStatic">
+              N/A
+            </p>
           </div>
         </div>
         <div class="card mb-4 mb-lg-0">
           <div class="card-body p-0">
-            <ul class="list-group list-group-flush rounded-3">
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fas fa-globe fa-lg text-warning"></i>
-                <p class="mb-0">https://link1.com</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                <p class="mb-0">https://link2.com</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                <p class="mb-0">https://link3.com</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                <p class="mb-0">https://link4.com</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                <p class="mb-0">https://link5.com</p>
-              </li>
+            <ul class="list-group list-group-flush rounded-3" id="linkHolder">
+              <% JSON.parse(rows).forEach(function(row){ if(row.Link != null) { %>
+                <%- include('widgets/linkLI', {link: row.Link, editable: editable}); %>
+              <% }}); %>
             </ul>
           </div>
         </div>
@@ -59,25 +45,31 @@
                 <p class="text-muted mb-0"><%= username%></p>
               </div>
             </div>
-            <hr>
+            <hr />
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Birthday</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0 editable" id="birthday">N/A</p>
+              </div>
+            </div>
+            <hr />
             <div class="row">
               <div class="col-sm-3">
                 <p class="mb-0">Location</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                <p class="text-muted mb-0 editable" id="location">N/A</p>
               </div>
             </div>
-            <hr>
+            <hr />
             <div class="row">
               <div class="col-sm-3">
                 <p class="mb-0">Description</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                  ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                  voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                <p class="text-muted mb-0 editable" id="description">N/A</p>
               </div>
             </div>
           </div>
@@ -85,16 +77,204 @@
       </div>
     </div>
   </div>
-  <footer class="bg-light text-center ">
+  <footer class="bg-light text-center vw-100 position-absolute bottom-0">
     <!-- Grid container -->
     <div class="container p-4">
-  
-      <button type="button" class="btn btn-outline-danger    " data-mdb-ripple-color="#000000"> Logout </button>
-      <button type="button" class="btn btn-outline-warning  btn-floating  " data-mdb-ripple-color="#ffffff"> <i class="fas fa-edit"></i> </button>
-  
+      <a
+        href="/logout"
+        type="button"
+        class="btn btn-outline-secondary"
+        data-mdb-ripple-color="#000000"
+      >
+        Logout
+      </a>
+      <% if(editable) {%>
+      <button
+        type="button"
+        class="btn btn-outline-warning btn-floating"
+        data-mdb-ripple-color="#ffffff"
+        data-bs-toggle="modal"
+        data-bs-target="#edit-modal"
+      >
+        Edit
+        <i class="fas fa-edit"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-success btn-floating"
+        data-mdb-ripple-color="#ffffff"
+        data-bs-toggle="modal"
+        data-bs-target="#link-modal"
+      >
+        Link
+        <i class="fas fa-add"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-danger btn-floating"
+        data-mdb-ripple-color="#ffffff"
+        id="remove-link"
+        onclick='$(".link-remove-button").toggle();'
+      >
+        Link
+        <i class="fas fa-remove"></i>
+      </button>
+      <% } %>
+      <button
+        type="button"
+        class="btn btn-outline-success btn-floating"
+        data-mdb-ripple-color="#ffffff"
+      >
+        New Post
+        <i class="fas fa-pen-nib"></i>
+      </button>
     </div>
     <!-- Grid container -->
-  
   </footer>
 </section>
-<script src="./account.js"></script>
+
+<% if(editable) {%>
+<div id="edit-modal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Details</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" action="/myaccount" method="POST">
+          <fieldset>
+            <div class="form-group mb-2">
+              <label class="control-label" for="birthday">Birthday</label>
+              <div class="">
+                <input
+                  id="birthday"
+                  name="birthday"
+                  type="text"
+                  placeholder="2020-03-01"
+                  class="form-control mb-1"
+                  maxlength="10"
+                  pattern="^\d{4}[-]((((0[13578])|([13578])|(1[02]))[-](([1-9])|([0-2][0-9])|(3[01])))|(((0[469])|([469])|(11))[-](([1-9])|([0-2][0-9])|(30)))|((2|02)[-](([1-9])|([0-2][0-9])))){1}$"
+                />
+                <span class="help-block">(YYYY-MM-DD)</span>
+              </div>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="control-label" for="location">Location</label>
+              <div class="">
+                <input
+                  id="location"
+                  name="location"
+                  type="text"
+                  placeholder="Heaven or Hell"
+                  class="form-control mb-1"
+                  maxlength="255"
+                />
+              </div>
+            </div>
+
+            <!-- Textarea -->
+            <div class="form-group mb-3">
+              <label class="control-label" for="description">Description</label>
+              <div class="">
+                <textarea
+                  class="form-control mb-1"
+                  id="description"
+                  name="description"
+                  placeholder="A description"
+                  maxlength="255"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Button (Double) -->
+            <div class="form-group mb-1">
+              <div class="">
+                <input
+                  type="submit"
+                  id="submit"
+                  name="submit"
+                  class="btn btn-success"
+                />
+                <button
+                  id="cancel"
+                  name="cancel"
+                  class="btn btn-inverse"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="link-modal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Details</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" action="/linkadd" method="POST">
+          <fieldset>
+            <div class="form-group mb-3">
+              <label class="control-label" for="link">Link</label>
+              <div class="">
+                <input
+                  id="link"
+                  name="link"
+                  type="text"
+                  placeholder="https://www.example.com/"
+                  class="form-control mb-1"
+                  maxlength="40"
+                  pattern="(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
+                />
+              </div>
+            </div>
+            <div class="form-group mb-1">
+              <div class="">
+                <input
+                  type="submit"
+                  id="submit"
+                  name="submit"
+                  class="btn btn-success"
+                />
+                <button
+                  id="cancel"
+                  name="cancel"
+                  class="btn btn-inverse"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%}%>
+
+<script>
+  const user = JSON.parse(`<%-user%>`);
+</script>
+<script src="../account.js"></script>
