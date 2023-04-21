@@ -36,6 +36,16 @@ router.get('/logout', (req, res) => {
 })
 
 router.get('/myaccount', isAuth, (req, res, next) => {
+  let posts;
+  dbHelper.mediaConnection.query(
+    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID FROM POST WHERE PosterUsername = ? LIMIT 10;', req.session.passport.user,
+    (err, rows) => {
+      if (err) throw console.error(err)
+      if (!err) {
+        console.log(JSON.stringify(rows));
+        posts = rows;
+      }
+    });
   dbHelper.mediaConnection.query(
     'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.session.passport.user,
     (err, rows) => {
@@ -47,7 +57,8 @@ router.get('/myaccount', isAuth, (req, res, next) => {
           rows: JSON.stringify(rows),
           user: JSON.stringify(rows[0]),
           username: rows[0].Username,
-          editable: true
+          editable: true,
+          posts: JSON.stringify(posts)
         })
       }
     }
@@ -55,7 +66,17 @@ router.get('/myaccount', isAuth, (req, res, next) => {
 })
 
 router.get('/account/:username', (req, res, next) => {
-  console.log("The parameter is: " + req.params.username);
+  // console.log("The parameter is: " + req.params.username);
+  let posts;
+  dbHelper.mediaConnection.query(
+    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID FROM POST WHERE PosterUsername = ? LIMIT 10;', req.params.username,
+    (err, rows) => {
+      if (err) throw console.error(err)
+      if (!err) {
+        console.log(JSON.stringify(rows));
+        posts = rows;
+      }
+    });
   dbHelper.mediaConnection.query(
     'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.params.username,
     (err, rows) => {
@@ -70,7 +91,8 @@ router.get('/account/:username', (req, res, next) => {
           rows: JSON.stringify(rows),
           user: JSON.stringify(rows[0]),
           username: rows[0].Username,
-          editable: (req.params.username == req.session.passport.user)
+          editable: (req.params.username == req.session.passport.user),
+          posts: JSON.stringify(posts)
         })
       }
     }
@@ -179,6 +201,12 @@ router.post('/linkremove', (req, res, next) => {
 });
 
 router.post('/newpost', (req, res, next) => {
+  dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user);
+
+  res.redirect('/myaccount');
+});
+
+router.post('/likepost', (req, res, next) => {
   dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user);
 
   res.redirect('/myaccount');

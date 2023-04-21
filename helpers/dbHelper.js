@@ -113,6 +113,24 @@ function newPost(
   console.log("newpost");
 }
 
+function likePost(
+  likerUsername,
+  likedPostId
+) {
+  const post = {
+    Username: likerUsername,
+    PostID: likedPostId,
+  }
+  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
+    if (err) console.log(err)
+    else {
+      console.log('Result: ' + JSON.stringify(result[0]));
+      return true
+    }
+  })
+  console.log("newpost");
+}
+
 function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err
@@ -131,5 +149,6 @@ module.exports = {
   addLink,
   removeLink,
   newPost,
+  likePost,
   query
 }

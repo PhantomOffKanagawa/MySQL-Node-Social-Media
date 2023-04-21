@@ -1,4 +1,4 @@
-<section class="vh-100 vw-100" style="background-color: #eee">
+<section class="" style="background-color: #eee">
   <div class="container py-5">
     <div class="row">
       <div class="col">
@@ -28,7 +28,7 @@
           <div class="card-body p-0">
             <ul class="list-group list-group-flush rounded-3" id="linkHolder">
               <% JSON.parse(rows).forEach(function(row){ if(row.Link != null) { %>
-                <%- include('widgets/linkLI', {link: row.Link, editable: editable}); %>
+              <%- include('widgets/linkLI', {link: row.Link, editable: editable}); %>
               <% }}); %>
             </ul>
           </div>
@@ -76,149 +76,15 @@
         </div>
       </div>
     </div>
+    <% if(typeof posts != 'undefined') { JSON.parse(posts).forEach(function(post){ if(post.PosterUsername != null) { %>
+    <%- include('widgets/post', {username: post.PosterUsername, createdTime: post.CreatedTime, contents: post.Contents}); %>
+    <% }}); } %>
   </div>
-<%- include("widgets/footer", {editable:editable}) %>
+  <%- include("widgets/footer", {editable:editable}) %>
 </section>
 
 <% if(editable) {%>
-<div id="edit-modal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Details</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form class="form-horizontal" action="/myaccount" method="POST">
-          <fieldset>
-            <div class="form-group mb-2">
-              <label class="control-label" for="birthday">Birthday</label>
-              <div class="">
-                <input
-                  id="birthday"
-                  name="birthday"
-                  type="text"
-                  placeholder="2020-03-01"
-                  class="form-control mb-1"
-                  maxlength="10"
-                  pattern="^\d{4}[-]((((0[13578])|([13578])|(1[02]))[-](([1-9])|([0-2][0-9])|(3[01])))|(((0[469])|([469])|(11))[-](([1-9])|([0-2][0-9])|(30)))|((2|02)[-](([1-9])|([0-2][0-9])))){1}$"
-                />
-                <span class="help-block">(YYYY-MM-DD)</span>
-              </div>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="control-label" for="location">Location</label>
-              <div class="">
-                <input
-                  id="location"
-                  name="location"
-                  type="text"
-                  placeholder="Heaven or Hell"
-                  class="form-control mb-1"
-                  maxlength="255"
-                />
-              </div>
-            </div>
-
-            <!-- Textarea -->
-            <div class="form-group mb-3">
-              <label class="control-label" for="description">Description</label>
-              <div class="">
-                <textarea
-                  class="form-control mb-1"
-                  id="description"
-                  name="description"
-                  placeholder="A description"
-                  maxlength="255"
-                ></textarea>
-              </div>
-            </div>
-
-            <!-- Button (Double) -->
-            <div class="form-group mb-1">
-              <div class="">
-                <input
-                  type="submit"
-                  id="submit"
-                  name="submit"
-                  class="btn btn-success"
-                />
-                <button
-                  id="cancel"
-                  name="cancel"
-                  class="btn btn-inverse"
-                  data-bs-dismiss="modal"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="link-modal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Details</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form class="form-horizontal" action="/linkadd" method="POST">
-          <fieldset>
-            <div class="form-group mb-3">
-              <label class="control-label" for="link">Link</label>
-              <div class="">
-                <input
-                  id="link"
-                  name="link"
-                  type="text"
-                  placeholder="https://www.example.com/"
-                  class="form-control mb-1"
-                  maxlength="40"
-                  pattern="(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"
-                />
-              </div>
-            </div>
-            <div class="form-group mb-1">
-              <div class="">
-                <input
-                  type="submit"
-                  id="submit"
-                  name="submit"
-                  class="btn btn-success"
-                />
-                <button
-                  id="cancel"
-                  name="cancel"
-                  class="btn btn-inverse"
-                  data-bs-dismiss="modal"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<%- include("widgets/accountModals.ejs") %>
 <%}%>
 
 <script>

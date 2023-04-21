@@ -1,59 +1,43 @@
 <%- include("postCreator") %>
 
 
-<footer class="bg-light text-center vw-100 position-absolute bottom-0">
+<footer class="bg-light text-center vw-100 position-fixed bottom-0">
     <!-- Grid container -->
     <div class="container p-4">
-      <a
-        href="/logout"
-        type="button"
-        class="btn btn-outline-secondary"
-        data-mdb-ripple-color="#000000"
-      >
-        Logout
-      </a>
-      <% if(editable) {%>
-      <button
-        type="button"
-        class="btn btn-outline-warning btn-floating"
-        data-mdb-ripple-color="#ffffff"
-        data-bs-toggle="modal"
-        data-bs-target="#edit-modal"
-      >
-        Edit
-        <i class="fas fa-edit"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-outline-success btn-floating"
-        data-mdb-ripple-color="#ffffff"
-        data-bs-toggle="modal"
-        data-bs-target="#link-modal"
-      >
-        Link
-        <i class="fas fa-add"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-outline-danger btn-floating"
-        data-mdb-ripple-color="#ffffff"
-        id="remove-link"
-        onclick='$(".link-remove-button").toggle();'
-      >
-        Link
-        <i class="fas fa-remove"></i>
-      </button>
-      <% } %>
-      <button
-        type="button"
-        class="btn btn-outline-success btn-floating"
-        data-mdb-ripple-color="#ffffff"
-        data-bs-toggle="modal"
-        data-bs-target="#post-creator-modal"
-      >
-        New Post
-        <i class="fas fa-pen-nib"></i>
-      </button>
+        <a href="/logout" type="button" class="btn btn-outline-secondary" data-mdb-ripple-color="#000000">
+            Logout
+        </a>
+        <% if(editable) {%>
+        <button type="button" class="btn btn-outline-warning btn-floating" data-mdb-ripple-color="#ffffff"
+            data-bs-toggle="modal" data-bs-target="#edit-modal">
+            Edit
+            <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" class="btn btn-outline-success btn-floating" data-mdb-ripple-color="#ffffff"
+            data-bs-toggle="modal" data-bs-target="#link-modal">
+            Link
+            <i class="fas fa-add"></i>
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
+            id="remove-link" onclick='$(".link-remove-button").toggle();'>
+            Link
+            <i class="fas fa-remove"></i>
+        </button>
+        <% } %>
+        <button type="button" class="btn btn-outline-success btn-floating" data-mdb-ripple-color="#ffffff"
+            data-bs-toggle="modal" data-bs-target="#post-creator-modal">
+            New Post
+            <i class="fas fa-pen-nib"></i>
+        </button>
     </div>
     <!-- Grid container -->
-  </footer>
+</footer>
+
+<script>
+    $(document).ready(function () {
+        $("body").css("margin-bottom", $("footer").height());
+        $(window).resize(function () {
+            $("body").css("margin-bottom", $("footer").height());
+        });
+    });
+</script>
