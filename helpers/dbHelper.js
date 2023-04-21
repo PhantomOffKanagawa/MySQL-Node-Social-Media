@@ -117,18 +117,18 @@ function likePost(
   likerUsername,
   likedPostId
 ) {
-  const post = {
+  const like = {
     Username: likerUsername,
     PostID: likedPostId,
   }
-  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
+  mediaConnection.query('INSERT INTO Likes SET ?', like, function (err, result) {
     if (err) console.log(err)
     else {
       console.log('Result: ' + JSON.stringify(result[0]));
       return true
     }
   })
-  console.log("newpost");
+  console.log("like");
 }
 
 function query(query) {

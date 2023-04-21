@@ -77,7 +77,7 @@
       </div>
     </div>
     <% if(typeof posts != 'undefined') { JSON.parse(posts).forEach(function(post){ if(post.PosterUsername != null) { %>
-    <%- include('widgets/post', {username: post.PosterUsername, createdTime: post.CreatedTime, contents: post.Contents}); %>
+    <%- include('widgets/post', {id:post.ID, username: post.PosterUsername, createdTime: post.CreatedTime, contents: post.Contents}); %>
     <% }}); } %>
   </div>
   <%- include("widgets/footer", {editable:editable}) %>

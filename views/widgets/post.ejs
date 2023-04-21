@@ -10,7 +10,7 @@
         <% function timeAgo(date){const now=new Date();const seconds=Math.round((now-date)/1000);const minutes=Math.round(seconds/60);const hours=Math.round(minutes/60);const days=Math.round(hours/24);if(seconds<60){return `${ seconds } seconds ago`}else if(minutes<60){return `${ minutes } minutes ago`}else if(hours<24){return `${ hours } hours ago`}else{return `${ days } days ago`}};%>
     </div>
     <div class="card-body">
-        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>   <%- timeAgo(new Date(createdTime)) %></div>
+        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> <%- timeAgo(new Date(createdTime)) %></div>
         <p class="card-text"> <%- contents %></p>
         <!-- <div>
             <span class="badge badge-primary bg-info">JavaScript</span>
@@ -22,7 +22,10 @@
         </div> -->
     </div>
     <div class="card-footer">
-        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-        <a href="#" class="card-link"><i class="fa fa-comment"></i> Reply</a>
+        <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff" onclick="$.post({url:'/likepost',data:{postID:'<%- id %>'}});">
+            <i class="fas fa-heart"></i>
+        </button>
+        <!-- <a href="" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+        <a href="#" class="card-link"><i class="fa fa-comment"></i> Reply</a> -->
     </div>
 </div>

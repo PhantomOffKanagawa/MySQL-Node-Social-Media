@@ -14,7 +14,8 @@ router.use(passport.session())
 // Landing Page
 router.get('/', (req, res) => {
   res.render('index.ejs', {
-    title: 'Home'
+    title: 'Home',
+    simpleIsLogged: isAuthBool(req)
   })
 })
 
@@ -88,10 +89,11 @@ router.get('/account/:username', (req, res, next) => {
       } else {
         res.render('account', {
           title: req.params.username + '\'s Account',
+          simpleIsLogged: isAuthBool(req),
           rows: JSON.stringify(rows),
           user: JSON.stringify(rows[0]),
           username: rows[0].Username,
-          editable: (req.params.username == req.session.passport.user),
+          editable: ( isAuthBool(req) && req.params.username == req.session.passport.user),
           posts: JSON.stringify(posts)
         })
       }
@@ -207,7 +209,7 @@ router.post('/newpost', (req, res, next) => {
 });
 
 router.post('/likepost', (req, res, next) => {
-  dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user);
+  dbHelper.likePost(req.session.passport.user, req.body.postID);
 
   res.redirect('/myaccount');
 });
@@ -252,6 +254,10 @@ function isAuth(req, res, next) {
   } else {
     res.redirect('/notAuthorized')
   }
+}
+
+function isAuthBool(req) {
+  return req.isAuthenticated();
 }
 
 // Helper to check if a user is not logged in
