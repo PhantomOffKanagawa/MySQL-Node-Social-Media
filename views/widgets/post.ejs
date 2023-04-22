@@ -16,9 +16,11 @@
         </div>
         <div class="card-body">
             <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> <%- timeAgo(new Date(CreatedTime)) %></div>
-            <p class="card-text" style="white-space: pre-line"> <%- Contents %></p>
+            <p class="card-text" style="white-space: pre-line"> <%- Contents.replace(/(?<=^| )#(\S){1,20}(?= |$|\n)/g, '<mark>$&</mark>') %></p>
             <div>
-            <span class="badge badge-primary bg-info">JavaScript</span>
+                <% if(typeof IncludedTags != 'undefined' && IncludedTags != null) { IncludedTags.forEach(function(tag){ if(tag != null) { %>
+                <span class="badge badge-primary bg-info"><%- tag %></span>
+                <% }}); } %>
         </div>
         </div>
         <div class="card-footer">

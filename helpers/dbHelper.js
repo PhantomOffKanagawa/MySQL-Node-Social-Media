@@ -95,7 +95,8 @@ function newPost(
   contents,
   createdTime,
   posterUsername,
-  shortLinkID
+  shortLinkID,
+  originalID
 ) {
   const post = {
     Contents: contents,
@@ -103,45 +104,85 @@ function newPost(
     PosterUsername: posterUsername,
     ShortLinkID: shortLinkID
   }
+  const m = contents.match(/(?<=^| )#(\S){1,20}(?= |$|\n)/g),
+    match = (m == null) ? [] : Array.from(new Set(m));
   mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
     if (err) console.log(err)
     else {
+      newID = result.insertId;
+      console.log("newpost");
+
+      if (typeof originalID != undefined) {
+        const reply = {
+          ReplyPostID: newID,
+          OriginalPostID: originalID
+        }
+        mediaConnection.query('INSERT INTO Replies SET ?', reply, function (err, result) {
+          if (err) console.log(err)
+          else {
+            console.log('Result: ' + JSON.stringify(result));
+            console.log("linked reply");
+          }
+        })
+      }
+
       console.log('Result: ' + JSON.stringify(result[0]));
+      if (match.length != 0) {
+        match.forEach(tag => {
+          newHashtag(tag, function (tag) { includeHashtag(tag, newID) });
+        });
+      }
       return true
     }
   })
   console.log("newpost");
 }
 
-function replyPost(contents, createdTime, posterUsername, shortLinkID, originalID) {
-  let newID;
-  const post = {
-    Contents: contents,
-    CreatedTime: createdTime,
-    PosterUsername: posterUsername,
-    ShortLinkID: shortLinkID
-  }
-  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
-    if (err) console.log(err)
+function newHashtag(Tag, callback) {
+  mediaConnection.query('INSERT INTO Hashtag SET ?', {
+    Tag: Tag
+  }, function (err, result) {
+    if (err && err.code != 'ER_DUP_ENTRY') console.log(err)
     else {
-      console.log('Result: ' + JSON.stringify(result));
-      newID = result.insertId;
-      console.log("newpost");
-
-      const reply = {
-        ReplyPostID: newID,
-        OriginalPostID: originalID
-      }
-      mediaConnection.query('INSERT INTO Replies SET ?', reply, function (err, result) {
-        if (err) console.log(err)
-        else {
-          console.log('Result: ' + JSON.stringify(result));
-          console.log("linked reply");
-        }
-      })
+      console.log('newHashtag Result: ' + JSON.stringify(result));
+      callback(Tag);
+      return true
     }
   })
 }
+
+function includeHashtag(Tag, PostID) {
+  mediaConnection.query('INSERT INTO IncludesTag SET ?', {
+    PostID: PostID,
+    Tag: Tag
+  }, function (err, result) {
+    if (err) console.log(err)
+    else {
+      console.log('newHashtag Result: ' + JSON.stringify(result));
+      return true
+    }
+  })
+}
+
+// function includeHashtags(tags, PostID) {
+//   if (tags.length > 5) tags.length = 5;
+//   let objects = [];
+//   console.log(tags);
+//   tags.forEach(tag => {
+//     objects.push({
+//       PostID: PostID,
+//       Tag: tag.substr(0, 20)
+//     });
+//   });
+//   console.log(objects);
+//   mediaConnection.query('INSERT INTO IncludesTag VALUES ?', objects, function (err, result) {
+//     if (err) console.log(err)
+//     else {
+//       console.log('includeHashtags Result: ' + JSON.stringify(result));
+//       return true
+//     }
+//   })
+// }
 
 function likePost(
   likerUsername,
@@ -172,34 +213,10 @@ function likePost(
   }
 }
 
-function newHashtag(Tag) {
-  mediaConnection.query('INSERT INTO Hashtag SET ?', {
-    Tag: Tag
-  }, function (err, result) {
-    if (err) console.log(err)
-    else {
-      console.log('Result: ' + JSON.stringify(result));
-      return true
-    }
-  })
-}
-
-function includeHashtags(Tag, PostID) {
-  if (Tag.length > 5) Tag.length = 5;
-  let objects = [];
-  Tag.array.forEach(tag => {
-    objects.push({
-      PostID: PostID,
-      Tag: tag.substr(0,20)
-    });
+function updateTrending() {
+  mediaConnection.query('with TagUses as ( select it.Tag, count(it.PostID) as UsedCount from IncludesTag it group by it.Tag ) select h.Tag, usedCount from Hashtag h left join TagUses tu on h.Tag = tu.Tag order by tu.UsedCount desc limit 1;', function (err, result) {
+    
   });
-  mediaConnection.query('INSERT INTO IncludesTag SET ?', objects, function (err, result) {
-    if (err) console.log(err)
-    else {
-      console.log('Result: ' + JSON.stringify(result));
-      return true
-    }
-  })
 }
 
 function query(query) {
@@ -220,7 +237,8 @@ module.exports = {
   addLink,
   removeLink,
   newPost,
-  replyPost,
   likePost,
+  newHashtag,
+  includeHashtag,
   query
 }
