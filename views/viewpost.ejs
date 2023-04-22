@@ -4,7 +4,7 @@
         <%- include('widgets/post', JSON.parse(original)); %>
         <% } %>
     </div>
-    <section class="m-4" style="background-color: #e6d0d0; border-radius: .2em;">
+    <section class="m-4" style="background-color: #e1dede; border-radius: .2em;">
         <div class="container py-5">
             <% if(typeof rows != 'undefined') { JSON.parse(rows).forEach(function(post){ if(post.PosterUsername != null) { %>
             <%- include('widgets/post', post); %>
@@ -12,3 +12,11 @@
         </div>
     </section>
 </section>
+
+<%- include("widgets/footer", {editable:editable}) %>
+
+<% if(editable) {%>
+<%- include("widgets/accountModals.ejs") %>
+<%}%>
+
+<%- include("widgets/postCreator", {type: "reply"}) %>

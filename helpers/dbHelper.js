@@ -172,6 +172,31 @@ function likePost(
   }
 }
 
+function newHashtag(Tag) {
+  mediaConnection.query('INSERT INTO Hashtag SET ?', {
+    Tag: Tag
+  }, function (err, result) {
+    if (err) console.log(err)
+    else {
+      console.log('Result: ' + JSON.stringify(result));
+      return true
+    }
+  })
+}
+
+function includeHashtag(Tag, PostID) {
+  if (Tag.length > 5) Tag.length = 5;
+  mediaConnection.query('INSERT INTO Hashtag SET ?', {
+    Tag: Tag
+  }, function (err, result) {
+    if (err) console.log(err)
+    else {
+      console.log('Result: ' + JSON.stringify(result));
+      return true
+    }
+  })
+}
+
 function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err

@@ -19,11 +19,6 @@
             <p class="card-text" style="white-space: pre-line"> <%- Contents %></p>
             <div>
             <span class="badge badge-primary bg-info">JavaScript</span>
-            <span class="badge badge-primary bg-info">Android</span>
-            <span class="badge badge-primary bg-info">PHP</span>
-            <span class="badge badge-primary bg-info">Node.js</span>
-            <span class="badge badge-primary bg-info">Ruby</span>
-            <span class="badge badge-primary bg-info">Paython</span>
         </div>
         </div>
         <div class="card-footer">
@@ -40,7 +35,7 @@
                 <!-- Reply Button -->
                 <button type="button" class="btn btn-sm btn-outline-primary btn-floating"
                     data-mdb-ripple-color="#ffffff" data-bs-toggle="modal" data-bs-target="#reply-creator-modal"
-                    onclick="$('#replyContents').text($(this).parent().parent().siblings('.card-body').children('.card-text').text());$('#postID').val($(this).parent().parent().siblings('.card-header').children('div').children('span.help-block').text())">
+                    onclick="$('#replyContents').text($(this).parent().parent().siblings('.card-body').children('.card-text').text());$('#originalPostID').val($(this).parent().parent().siblings('.card-header').children('div').children('span.help-block').text())">
                     <i class="fa-solid fa-reply"></i>
                 </button>
                 <a href="/viewpost/<%-ID%>"><span class="badge badge-primary bg-info"><%-TotalReplies%></span></a>

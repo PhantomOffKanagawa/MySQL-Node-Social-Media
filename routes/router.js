@@ -118,7 +118,7 @@ router.get('/viewpost/:postid', (req, res, next) => {
           simpleIsLogged: isAuthBool(req),
           original: JSON.stringify(rows.shift()),
           rows: JSON.stringify(rows),
-          editable: ( isAuthBool(req) && req.params.username == req.session.passport.user)
+          editable: false
         });
       }
     });
@@ -234,7 +234,7 @@ router.post('/newpost', (req, res, next) => {
 
 router.post('/replypost', (req, res, next) => {
   console.log("The old id was: " + req.body.postID)
-  dbHelper.replyPost(req.body.contents, new Date().toISOString(), req.session.passport.user, undefined, req.body.postID);
+  dbHelper.replyPost(req.body.contents, new Date().toISOString(), req.session.passport.user, undefined, req.body.originalPostID);
 
   res.redirect('/myaccount');
 });

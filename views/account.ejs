@@ -88,7 +88,7 @@
 <%- include("widgets/accountModals.ejs") %>
 <%}%>
 
-<%- include("widgets/replyCreator") %>
+<%- include("widgets/postCreator", {type:"reply"}) %>
 
 <script>
   const user = JSON.parse(`<%-user%>`);
