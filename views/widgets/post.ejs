@@ -2,26 +2,29 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center position-relative">
             <div class="d-flex justify-content-between align-items-center">
-                <div class="ml-2">
-                    <div class="h5 m-1">@<%=PosterUsername%></div>
-                </div>
+                <a class="link-dark" href="/account/<%=PosterUsername%>">
+                    <div class="ml-2">
+                        <div class="h5 m-1"><%=PosterUsername%></div>
+                    </div>
+                </a>
             </div>
             <span class="help-block text-muted small position-absolute end-0"><%-ID%>
-            <% if(typeof OriginalPostID != 'undefined' && OriginalPostID != null) { %>
-            Reply to <%-OriginalPostID%>
-            <%}%>
+                <% if(typeof OriginalPostID != 'undefined' && OriginalPostID != null) { %>
+                Reply to <%-OriginalPostID%>
+                <%}%>
         </span>
         </div>
         <% function timeAgo(date){const now=new Date();const seconds=Math.round((now-date)/1000);const minutes=Math.round(seconds/60);const hours=Math.round(minutes/60);const days=Math.round(hours/24);if(seconds<60){return `${ seconds } seconds ago`}else if(minutes<60){return `${ minutes } minutes ago`}else if(hours<24){return `${ hours } hours ago`}else{return `${ days } days ago`}};%>
         </div>
         <div class="card-body">
             <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> <%- timeAgo(new Date(CreatedTime)) %></div>
-            <p class="card-text" style="white-space: pre-line"> <%- Contents.replace(/(?<=^| )#(\S){1,20}(?= |$|\n)/g, '<mark>$&</mark>') %></p>
+            <p class="card-text" style="white-space: pre-line">
+                <%- Contents.replace(/(?<=^| )#(\S){1,20}(?= |$|\n)/g, '<mark>$&</mark>') %></p>
             <div>
                 <% if(typeof IncludedTags != 'undefined' && IncludedTags != null) { IncludedTags.forEach(function(tag){ if(tag != null) { %>
                 <span class="badge badge-primary bg-info"><%- tag %></span>
                 <% }}); } %>
-        </div>
+            </div>
         </div>
         <div class="card-footer">
             <span>

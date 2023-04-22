@@ -1,9 +1,7 @@
-<% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
-<%- include("postCreator") %>
-
 <footer class="bg-light text-center vw-100 position-fixed bottom-0">
     <!-- Grid container -->
     <div class="container p-4">
+        <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
         <a href="/logout" type="button" class="btn btn-outline-secondary" data-mdb-ripple-color="#000000">
             Logout
         </a>
@@ -29,10 +27,18 @@
             New Post
             <i class="fas fa-pen-nib"></i>
         </button>
+        <% } %>
+        <a href="/trending" class="btn btn-outline-info btn-floating" data-mdb-ripple-color="#ffffff">
+            Trending
+            <i class="fa-solid fa-ranking-star"></i>
+        </a>
     </div>
     <!-- Grid container -->
 </footer>
 
+
+<% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
+<%- include("postCreator") %>
 <script>
     $(document).ready(function () {
         $("body").css("margin-bottom", $("footer").height());

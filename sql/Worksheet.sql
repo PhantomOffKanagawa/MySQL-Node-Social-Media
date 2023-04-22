@@ -1,10 +1,25 @@
 UPDATE USER SET Description="" WHERE Username='1234';
-select * from user;
+select * from user
+order by CreatedTime desc limit 1;
 SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = '1234';
 
-select * from includestag;
+select * from trending;
 
--- POST GRABBER BY USER
+-- GET TOP TRENDING HASHTAG
+with TagUses as (
+select it.Tag, count(it.PostID) as UsedCount
+from IncludesTag it
+left join post p on p.ID = it.PostID
+where CreatedTime > (select StartTime from trending order by StartTime desc limit 1)
+group by it.Tag
+)
+select h.Tag, usedCount
+from Hashtag h
+left join TagUses tu on h.Tag = tu.Tag
+order by tu.UsedCount desc
+limit 1;
+
+-- POST GRABBER BY TAG ViewerUsername Tag
 WITH PostLikes AS (
     SELECT p.ID, COUNT(l.PostID) AS TotalLikes
     FROM POST p
@@ -28,17 +43,35 @@ LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE p.ID = '54'
-UNION ALL
-SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
+LEFT JOIN IncludesTag it ON p.ID = it.PostID
+WHERE it.Tag = '#777'
+order by TotalLikes desc;
+
+-- POST GRABBER BY USER ViewerUsername WantedUsername
+WITH PostLikes AS (
+    SELECT p.ID, COUNT(l.PostID) AS TotalLikes
+    FROM POST p
+    LEFT JOIN Likes l ON p.ID = l.PostID
+    GROUP BY p.ID
+),
+PostReplies AS (
+    SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies
+    FROM Replies r
+    GROUP BY r.OriginalPostID
+),
+PostTags AS (
+    Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags
+	From IncludesTag it
+	group by it.PostID
+)
+SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
 FROM POST p
-JOIN Replies r ON p.ID = r.ReplyPostID
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
-LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
+LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = 'Person2'
+LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE r.OriginalPostID = '54'
-ORDER BY TotalLikes DESC;
+WHERE p.PosterUsername = '1234';
 
 -- THE POST AND REPLY GRABBER ViewerUsername PostID ViewerUsername PostID
 WITH PostLikes AS (
@@ -57,24 +90,24 @@ PostTags AS (
 	From IncludesTag it
 	group by it.PostID
 )
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortlinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortlinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE p.ID = '54'
+WHERE p.ID = '4'
 UNION ALL
-SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
+SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering
 FROM POST p
 JOIN Replies r ON p.ID = r.ReplyPostID
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE r.OriginalPostID = '54'
-ORDER BY TotalLikes DESC;
+WHERE r.OriginalPostID = '4'
+ORDER BY ordering, TotalLikes DESC;
 
 
 WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = "1234" LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID WHERE p.ID = '52' UNION ALL SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p JOIN Replies r ON p.ID = r.ReplyPostID LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = "1234" WHERE r.OriginalPostID = '52' ORDER BY TotalLikes DESC;

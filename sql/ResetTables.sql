@@ -52,8 +52,8 @@ CREATE TABLE POLL ( -- Compound Table
 
  -- Only one trending tag or now 
 CREATE TABLE TRENDING ( -- Compound Table
-    StartTime int not null, -- pk
-    Tag varchar(20) not null,
+    StartTime varchar(26) not null, -- pk
+    Tag varchar(20),
     Lifespan int not null,
     PRIMARY KEY (StartTime), 
     FOREIGN KEY (Tag) References HASHTAG(Tag) 

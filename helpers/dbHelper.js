@@ -110,9 +110,9 @@ function newPost(
     if (err) console.log(err)
     else {
       newID = result.insertId;
-      console.log("newpost");
+      console.log("newpost + " +  typeof originalID);
 
-      if (typeof originalID != undefined) {
+      if (typeof originalID != 'undefined') {
         const reply = {
           ReplyPostID: newID,
           OriginalPostID: originalID
@@ -129,7 +129,9 @@ function newPost(
       console.log('Result: ' + JSON.stringify(result[0]));
       if (match.length != 0) {
         match.forEach(tag => {
-          newHashtag(tag, function (tag) { includeHashtag(tag, newID) });
+          newHashtag(tag, function (tag) {
+            includeHashtag(tag, newID)
+          });
         });
       }
       return true
@@ -213,10 +215,49 @@ function likePost(
   }
 }
 
-function updateTrending() {
-  mediaConnection.query('with TagUses as ( select it.Tag, count(it.PostID) as UsedCount from IncludesTag it group by it.Tag ) select h.Tag, usedCount from Hashtag h left join TagUses tu on h.Tag = tu.Tag order by tu.UsedCount desc limit 1;', function (err, result) {
-    
+function updateTrending(lifespan, callback) {
+  mediaConnection.query('with TagUses as ( select it.Tag, count(it.PostID) as UsedCount from IncludesTag it left join post p on p.ID = it.PostID where CreatedTime > (select StartTime from trending order by StartTime desc limit 1) group by it.Tag ) select h.Tag, usedCount from Hashtag h left join TagUses tu on h.Tag = tu.Tag order by tu.UsedCount desc limit 1;', function (err, result) {
+
+    mediaConnection.query('insert into Trending set ?', {
+      StartTime: new Date().toISOString(),
+      Tag: (result[0].usedCount != null) ? result[0].Tag : null,
+      Lifespan: lifespan
+    }, (err, result) => {
+      if (err) console.log("Error in update Trending " + err);
+      callback()
+    })
   });
+}
+
+function getTrending(callback) {
+  let trending;
+  mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
+    if (err) console.error(err);
+    else {
+      trending = result[0];
+      console.log(typeof trending)
+      if (typeof trending == 'undefined') {
+        mediaConnection.query('insert into Trending set ?', {
+          StartTime: 0,
+          Tag: null,
+          Lifespan: 0
+        }, (err, result) => {
+          if (err) console.log("Error in get Trending " + err);
+          getTrending(callback);
+        })
+      } else if(new Date(trending.StartTime).valueOf() + trending.Lifespan <= new Date().valueOf()) {
+        console.log(typeof trending)
+        updateTrending(60000, function () {
+          mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
+            trending = result[0]
+            callback(trending)
+          })
+        });
+      } else {
+        callback(trending)
+      }
+    }
+  })
 }
 
 function query(query) {
@@ -240,5 +281,6 @@ module.exports = {
   likePost,
   newHashtag,
   includeHashtag,
+  getTrending,
   query
 }

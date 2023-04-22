@@ -76,7 +76,7 @@
         </div>
       </div>
     </div>
-    <% if(typeof posts != 'undefined') { JSON.parse(posts).forEach(function(post){ if(post.PosterUsername != null) { %>
+    <% if(typeof posts != 'undefined') { JSON.parse(posts).reverse().forEach(function(post){ if(post.PosterUsername != null) { %>
     <%- include('widgets/post', post); %>
     <% }}); } %>
   </div>
