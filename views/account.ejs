@@ -77,15 +77,18 @@
       </div>
     </div>
     <% if(typeof posts != 'undefined') { JSON.parse(posts).forEach(function(post){ if(post.PosterUsername != null) { %>
-    <%- include('widgets/post', {id:post.ID, username: post.PosterUsername, createdTime: post.CreatedTime, contents: post.Contents}); %>
+    <%- include('widgets/post', post); %>
     <% }}); } %>
   </div>
-  <%- include("widgets/footer", {editable:editable}) %>
 </section>
+
+<%- include("widgets/footer", {editable:editable}) %>
 
 <% if(editable) {%>
 <%- include("widgets/accountModals.ejs") %>
 <%}%>
+
+<%- include("widgets/replyCreator") %>
 
 <script>
   const user = JSON.parse(`<%-user%>`);

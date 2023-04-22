@@ -39,11 +39,11 @@ router.get('/logout', (req, res) => {
 router.get('/myaccount', isAuth, (req, res, next) => {
   let posts;
   dbHelper.mediaConnection.query(
-    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID FROM POST WHERE PosterUsername = ? LIMIT 10;', req.session.passport.user,
+    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID, CASE WHEN l.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, COUNT(DISTINCT l2.PostID) AS TotalLikes, COUNT(DISTINCT r.ReplyPostID) AS TotalReplies, MAX(r2.OriginalPostID) AS OriginalPostID FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID AND l.Username = ? LEFT JOIN Likes l2 ON p.ID = l2.PostID LEFT JOIN Replies r ON p.ID = r.OriginalPostID LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID WHERE p.PosterUsername = ? GROUP BY p.ID;', [req.session.passport.user,req.session.passport.user],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
-        console.log(JSON.stringify(rows));
+        // console.log(JSON.stringify(rows));
         posts = rows;
       }
     });
@@ -55,6 +55,7 @@ router.get('/myaccount', isAuth, (req, res, next) => {
         // console.log(rows)
         res.render('account', {
           title: 'My Account',
+          simpleIsLogged: isAuthBool(req),
           rows: JSON.stringify(rows),
           user: JSON.stringify(rows[0]),
           username: rows[0].Username,
@@ -70,11 +71,12 @@ router.get('/account/:username', (req, res, next) => {
   // console.log("The parameter is: " + req.params.username);
   let posts;
   dbHelper.mediaConnection.query(
-    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID FROM POST WHERE PosterUsername = ? LIMIT 10;', req.params.username,
+    'SELECT ID, Contents, CreatedTime, PosterUsername, ShortlinkID, CASE WHEN l.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, COUNT(DISTINCT l2.PostID) AS TotalLikes, COUNT(DISTINCT r.ReplyPostID) AS TotalReplies, MAX(r2.OriginalPostID) AS OriginalPostID FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID AND l.Username = ? LEFT JOIN Likes l2 ON p.ID = l2.PostID LEFT JOIN Replies r ON p.ID = r.OriginalPostID LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID WHERE p.PosterUsername = ? GROUP BY p.ID;', [req.session.passport.user,req.params.username],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
-        console.log(JSON.stringify(rows));
+        // console.log("hello");
+        // console.log(JSON.stringify(rows));
         posts = rows;
       }
     });
@@ -99,6 +101,27 @@ router.get('/account/:username', (req, res, next) => {
       }
     }
   )
+})
+
+router.get('/viewpost/:postid', (req, res, next) => {
+  console.log("The parameter is: " + req.params.postid);
+  dbHelper.mediaConnection.query(
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID WHERE p.ID = ? UNION ALL SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p JOIN Replies r ON p.ID = r.ReplyPostID LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? WHERE r.OriginalPostID = ? ORDER BY TotalLikes DESC;', [req.session.passport.user, req.params.postid, req.session.passport.user, req.params.postid],
+    (err, rows) => {
+      if (err) throw console.error(err)
+      if (!err) {
+        // console.log("hello");
+        // console.log(rows.shift());
+        // posts = rows;
+        res.render('viewpost', {
+          title: req.params.username + 'Post ' + req.body.postid,
+          simpleIsLogged: isAuthBool(req),
+          original: JSON.stringify(rows.shift()),
+          rows: JSON.stringify(rows),
+          editable: ( isAuthBool(req) && req.params.username == req.session.passport.user)
+        });
+      }
+    });
 })
 
 // Directed page on success
@@ -191,6 +214,7 @@ router.post('/myaccount', isAuth, (req, res, next) => {
 })
 
 router.post('/linkadd', isAuth, (req, res, next) => {
+  if (req.body.link == "") return res.redirect('/myaccount');
   dbHelper.addLink(req.session.passport.user, req.body.link);
 
   res.redirect('/myaccount');
@@ -208,10 +232,19 @@ router.post('/newpost', (req, res, next) => {
   res.redirect('/myaccount');
 });
 
-router.post('/likepost', (req, res, next) => {
-  dbHelper.likePost(req.session.passport.user, req.body.postID);
+router.post('/replypost', (req, res, next) => {
+  console.log("The old id was: " + req.body.postID)
+  dbHelper.replyPost(req.body.contents, new Date().toISOString(), req.session.passport.user, undefined, req.body.postID);
 
   res.redirect('/myaccount');
+});
+
+//! Optionally add check for already liked for resiliance
+router.post('/likepost', (req, res, next) => {
+  // console.log(req.session.passport.user, req.body.postID, req.body.liked);
+  dbHelper.likePost(req.session.passport.user, req.body.postID, req.body.liked);
+
+  // res.redirect('/myaccount');
 });
 
 // Helpers

@@ -1,31 +1,49 @@
 <div class="card mb-4">
     <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="ml-2">
-                    <div class="h5 m-1">@<%=username%></div>
+                    <div class="h5 m-1">@<%=PosterUsername%></div>
                 </div>
             </div>
+            <span class="help-block text-muted small position-absolute end-0"><%-ID%>
+            <% if(typeof OriginalPostID != 'undefined' && OriginalPostID != null) { %>
+            Reply to <%-OriginalPostID%>
+            <%}%>
+        </span>
         </div>
         <% function timeAgo(date){const now=new Date();const seconds=Math.round((now-date)/1000);const minutes=Math.round(seconds/60);const hours=Math.round(minutes/60);const days=Math.round(hours/24);if(seconds<60){return `${ seconds } seconds ago`}else if(minutes<60){return `${ minutes } minutes ago`}else if(hours<24){return `${ hours } hours ago`}else{return `${ days } days ago`}};%>
-    </div>
-    <div class="card-body">
-        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> <%- timeAgo(new Date(createdTime)) %></div>
-        <p class="card-text"> <%- contents %></p>
-        <!-- <div>
+        </div>
+        <div class="card-body">
+            <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> <%- timeAgo(new Date(CreatedTime)) %></div>
+            <p class="card-text" style="white-space: pre-line"> <%- Contents %></p>
+            <div>
             <span class="badge badge-primary bg-info">JavaScript</span>
             <span class="badge badge-primary bg-info">Android</span>
             <span class="badge badge-primary bg-info">PHP</span>
             <span class="badge badge-primary bg-info">Node.js</span>
             <span class="badge badge-primary bg-info">Ruby</span>
             <span class="badge badge-primary bg-info">Paython</span>
-        </div> -->
-    </div>
-    <div class="card-footer">
-        <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff" onclick="$.post({url:'/likepost',data:{postID:'<%- id %>'}});">
-            <i class="fas fa-heart"></i>
+        </div>
+        </div>
+        <div class="card-footer">
+            <span>
+                <!-- Like Button -->
+                <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
+                    onclick="let liked=$(this).children().hasClass('fas');$.post({url:'/likepost',data:{postID:'<%- ID %>', liked: liked}});$(this).children().toggleClass('fas fa-regular').parent().siblings('span').text(parseInt($(this).siblings('span').text()) + 1*(liked ? -1 : 1))">
+                    <%if (LikedBySecondUser == 1) {%><i class="fas fa-heart"></i><%}else{%>
+                    <i class="fa-regular fa-heart"></i><%}%>
         </button>
-        <!-- <a href="" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-        <a href="#" class="card-link"><i class="fa fa-comment"></i> Reply</a> -->
+            <span class="badge badge-primary bg-danger"><%-TotalLikes%></span>
+            </span>
+            <span>
+                <!-- Reply Button -->
+                <button type="button" class="btn btn-sm btn-outline-primary btn-floating"
+                    data-mdb-ripple-color="#ffffff" data-bs-toggle="modal" data-bs-target="#reply-creator-modal"
+                    onclick="$('#replyContents').text($(this).parent().parent().siblings('.card-body').children('.card-text').text());$('#postID').val($(this).parent().parent().siblings('.card-header').children('div').children('span.help-block').text())">
+                    <i class="fa-solid fa-reply"></i>
+                </button>
+                <a href="/viewpost/<%-ID%>"><span class="badge badge-primary bg-info"><%-TotalReplies%></span></a>
+            </span>
+        </div>
     </div>
-</div>

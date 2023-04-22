@@ -31,7 +31,7 @@ function insertUser(
   }
   mediaConnection.query('INSERT INTO USER SET ?', user, function (err, result) {
     if (err) return false
-    console.log('Result: ' + JSON.stringify(result[0]))
+    console.log('Result: ' + JSON.stringify(result))
     return true
   })
 }
@@ -113,22 +113,63 @@ function newPost(
   console.log("newpost");
 }
 
-function likePost(
-  likerUsername,
-  likedPostId
-) {
-  const like = {
-    Username: likerUsername,
-    PostID: likedPostId,
+function replyPost(contents, createdTime, posterUsername, shortLinkID, originalID) {
+  let newID;
+  const post = {
+    Contents: contents,
+    CreatedTime: createdTime,
+    PosterUsername: posterUsername,
+    ShortLinkID: shortLinkID
   }
-  mediaConnection.query('INSERT INTO Likes SET ?', like, function (err, result) {
+  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
     if (err) console.log(err)
     else {
-      console.log('Result: ' + JSON.stringify(result[0]));
-      return true
+      console.log('Result: ' + JSON.stringify(result));
+      newID = result.insertId;
+      console.log("newpost");
+
+      const reply = {
+        ReplyPostID: newID,
+        OriginalPostID: originalID
+      }
+      mediaConnection.query('INSERT INTO Replies SET ?', reply, function (err, result) {
+        if (err) console.log(err)
+        else {
+          console.log('Result: ' + JSON.stringify(result));
+          console.log("linked reply");
+        }
+      })
     }
   })
-  console.log("like");
+}
+
+function likePost(
+  likerUsername,
+  likedPostId,
+  liked
+) {
+  console.log(liked + typeof liked)
+  if (liked == "false") {
+    const like = {
+      Username: likerUsername,
+      PostID: likedPostId,
+    }
+    mediaConnection.query('INSERT INTO Likes SET ?', like, function (err, result) {
+      if (err) console.log(err)
+      else {
+        console.log('Result: ' + JSON.stringify(result));
+        return true
+      }
+    })
+  } else {
+    mediaConnection.query('DELETE FROM Likes Where Username = ? and PostID = ?', [likerUsername, likedPostId], function (err, result) {
+      if (err) console.log(err)
+      else {
+        console.log('Result: ' + JSON.stringify(result[0]));
+        return true
+      }
+    })
+  }
 }
 
 function query(query) {
@@ -149,6 +190,7 @@ module.exports = {
   addLink,
   removeLink,
   newPost,
+  replyPost,
   likePost,
   query
 }
