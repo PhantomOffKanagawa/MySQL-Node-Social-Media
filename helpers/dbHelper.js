@@ -184,11 +184,16 @@ function newHashtag(Tag) {
   })
 }
 
-function includeHashtag(Tag, PostID) {
+function includeHashtags(Tag, PostID) {
   if (Tag.length > 5) Tag.length = 5;
-  mediaConnection.query('INSERT INTO Hashtag SET ?', {
-    Tag: Tag
-  }, function (err, result) {
+  let objects = [];
+  Tag.array.forEach(tag => {
+    objects.push({
+      PostID: PostID,
+      Tag: tag.substr(0,20)
+    });
+  });
+  mediaConnection.query('INSERT INTO IncludesTag SET ?', objects, function (err, result) {
     if (err) console.log(err)
     else {
       console.log('Result: ' + JSON.stringify(result));

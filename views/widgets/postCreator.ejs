@@ -18,29 +18,32 @@
                 <%}%>
                         <fieldset>
                             <% if(typeof type == 'string' && type=="reply"){ %>
-                <input id="originalPostID" type="text" value="" name="originalPostID" readonly hidden>
-                <%}%>
+                            <input id="originalPostID" type="text" value="" name="originalPostID" readonly hidden>
+                            <%}%>
 
+                            
+    
+                            <% if(typeof type == 'string' && type=="reply"){ %>
+                            <div class="form-group mb-2 position-relative">
+                                <label class="control-label">Replying to</label>
+                                <div class="">
+                                    <textarea class="form-control mb-1" id="replyContents" maxlength="255" readonly></textarea>
+                                </div>
+                            </div>
+                            <%}%>
                             <div class="form-group mb-4 position-relative">
-    
-                                <% if(typeof type == 'string' && type=="reply"){ %>
-                <label class="control-label">Replying to</label>
-                <div class="">
-                    <textarea class="form-control mb-1" id="replyContents" maxlength="255" readonly></textarea>
-                </div>
-                <%}%>
-    
                                 <label class="control-label" for="contents">Post Contents</label>
                                 <div class="">
-                                    <textarea class="form-control mb-1" id="contents" name="contents"
+                                    <textarea class="form-control mb-1" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>contents" name="contents"
                                         placeholder="Enter the post here... (255 character limit)"
                                         maxlength="255"></textarea>
-                                    <span class="help-block text-muted position-absolute end-0" id="charRemaining">0/255</span>
+                                    <span class="help-block text-muted position-absolute end-0" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>charRemaining">0/255</span>
+                                    <span class="help-block text-muted position-absolute start-0" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining">0/5 tags</span>
                                 </div>
                             </div>
     
                             <!-- Button (Double) -->
-                            <div class="form-group mb-1 mt-4">
+                            <div class="form-group mb-1 mt-5">
                                 <div class="">
                                     <input type="submit" id="submit" name="submit" class="btn btn-success" />
                                     <a id="cancel" name="cancel" class="btn btn-inverse" data-bs-dismiss="modal">
@@ -57,8 +60,18 @@
     
     <script>
         $(document).ready(function () {
-            $('#contents').keyup(function () {
-                $("#charRemaining").html(`${this.value.length}/255`);
-            })
+            $('#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>contents').keyup(function (event) {
+                const m = this.value.match(/(?<=^| )#(\S){1,20}(?= |$|\n)/g),
+                    l = (m == null) ? 0 : new Set(m).size;
+                $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>charRemaining").html(`${this.value.length}/255`);
+                $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining").html(`${l}/5 tags`);
+                if (l > 5) {
+                    $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining").removeClass('text-muted').addClass('text-danger');
+                    this.setCustomValidity('Too many tags');
+                } else {
+                    $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining").removeClass('text-danger').addClass('text-muted');
+                    this.setCustomValidity('');
+                }
+            });
         });
     </script>

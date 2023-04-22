@@ -35,7 +35,7 @@
                 <!-- Reply Button -->
                 <button type="button" class="btn btn-sm btn-outline-primary btn-floating"
                     data-mdb-ripple-color="#ffffff" data-bs-toggle="modal" data-bs-target="#reply-creator-modal"
-                    onclick="$('#replyContents').text($(this).parent().parent().siblings('.card-body').children('.card-text').text());$('#originalPostID').val($(this).parent().parent().siblings('.card-header').children('div').children('span.help-block').text())">
+                    onclick="$('#replyContents').text(`<%= Contents %>`);$('#originalPostID').val(<%= ID %>)">
                     <i class="fa-solid fa-reply"></i>
                 </button>
                 <a href="/viewpost/<%-ID%>"><span class="badge badge-primary bg-info"><%-TotalReplies%></span></a>
