@@ -22,7 +22,7 @@
                 <%- Contents.replace(/(?<=^| )#(\S){1,20}(?= |$|\n)/g, '<mark>$&</mark>') %></p>
             <div>
                 <% if(typeof IncludedTags != 'undefined' && IncludedTags != null) { IncludedTags.forEach(function(tag){ if(tag != null) { %>
-                <span class="badge badge-primary bg-info"><%- tag %></span>
+                <a href="/tags/<%- tag.slice(1) %>"><span class="badge badge-primary bg-info"><%- tag %></span></a>
                 <% }}); } %>
             </div>
         </div>

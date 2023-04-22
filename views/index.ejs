@@ -1,3 +1,21 @@
+<div class="container">
+    <header
+        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center col-md-1 mb-2 mb-md-0 text-dark text-decoration-none">
+            <i class="fa-solid fa-database"></i>
+        </a>
+
+        <form action="/getuser" method="POST" class="col-md-8">
+            <input type="search" class="form-control form-control-dark" name="user" placeholder="Get User Posts" aria-label="Search">
+        </form>
+
+        <div class="col-md-3 text-end">
+            <a href="/login" class="btn btn-outline-primary me-2">Login</a>
+            <a href="/register" class="btn btn-primary">Sign-up</a>
+        </div>
+    </header>
+</div>
+
 <div class="px-4 py-5 my-5 text-center">
     <img class="d-block mx-auto mb-4" src="https://uilogos.co/img/logomark/u-mark.png" alt="" width="auto" height="150">
     <h1 class="display-5 fw-bold">The Landing Page</h1>

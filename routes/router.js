@@ -72,8 +72,9 @@ router.get('/tags/:tag', (req, res, next) => {
   // console.log("The parameter is: " + req.params.username);
   let posts;
   let tag = "#" + req.params.tag;
-  dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN IncludesTag it ON p.ID = it.PostID WHERE it.Tag = ? order by TotalLikes desc;', [req.session.passport.user,tag],
+    const username = (isAuthBool(req)) ? req.session.passport.user : null;
+    dbHelper.mediaConnection.query(
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN IncludesTag it ON p.ID = it.PostID WHERE it.Tag = ? order by TotalLikes desc;', [username,tag],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -94,8 +95,9 @@ router.get('/tags/:tag', (req, res, next) => {
 router.get('/trending', (req, res, next) => {
   let posts;
   dbHelper.getTrending(function (trending) {
+    const username = (isAuthBool(req)) ? req.session.passport.user : null;
   dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN IncludesTag it ON p.ID = it.PostID WHERE it.Tag = ? order by TotalLikes desc;', [req.session.passport.user, trending.Tag],
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN IncludesTag it ON p.ID = it.PostID WHERE it.Tag = ? order by TotalLikes desc;', [username, trending.Tag],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -116,8 +118,9 @@ router.get('/trending', (req, res, next) => {
 router.get('/account/:username', (req, res, next) => {
   // console.log("The parameter is: " + req.params.username);
   let posts;
-  dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE p.PosterUsername = ?;', [req.session.passport.user,req.params.username],
+    const username = (isAuthBool(req)) ? req.session.passport.user : null;
+    dbHelper.mediaConnection.query(
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE p.PosterUsername = ?;', [username,req.params.username],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -151,8 +154,9 @@ router.get('/account/:username', (req, res, next) => {
 
 router.get('/viewpost/:postid', (req, res, next) => {
   console.log("The parameter is: " + req.params.postid);
-  dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortlinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE p.ID = ? UNION ALL SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering FROM POST p JOIN Replies r ON p.ID = r.ReplyPostID LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE r.OriginalPostID = ? ORDER BY ordering, TotalLikes DESC;', [req.session.passport.user, req.params.postid, req.session.passport.user, req.params.postid],
+    const username = (isAuthBool(req)) ? req.session.passport.user : null;
+    dbHelper.mediaConnection.query(
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortlinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE p.ID = ? UNION ALL SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering FROM POST p JOIN Replies r ON p.ID = r.ReplyPostID LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN PostTags pt ON p.ID = pt.PostID WHERE r.OriginalPostID = ? ORDER BY ordering, TotalLikes DESC;', [username, req.params.postid, username, req.params.postid],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -267,27 +271,31 @@ router.post('/linkadd', isAuth, (req, res, next) => {
   res.redirect('/myaccount');
 });
 
-router.post('/linkremove', (req, res, next) => {
+router.post('/linkremove', isAuth, (req, res, next) => {
   dbHelper.removeLink(req.session.passport.user, req.body.link);
 
   res.redirect('/myaccount');
 });
 
-router.post('/newpost', (req, res, next) => {
+router.post('/newpost', isAuth, (req, res, next) => {
   dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user);
 
   res.redirect('/myaccount');
 });
 
-router.post('/replypost', (req, res, next) => {
+router.post('/replypost', isAuth, (req, res, next) => {
   console.log("The old id was: " + req.body.postID)
   dbHelper.newPost(req.body.contents, new Date().toISOString(), req.session.passport.user, undefined, req.body.originalPostID);
 
   res.redirect('/myaccount');
 });
 
+router.post('/getuser', (req, res, next) => {
+  res.redirect('/account/' + req.body.user)
+});
+
 //! Optionally add check for already liked for resiliance
-router.post('/likepost', (req, res, next) => {
+router.post('/likepost', isAuth, (req, res, next) => {
   // console.log(req.session.passport.user, req.body.postID, req.body.liked);
   dbHelper.likePost(req.session.passport.user, req.body.postID, req.body.liked);
 
