@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "fresh": "node helpers/reset.js && node index.js",
+    "dev": "nodemon index.js",
+    "reset": "node helpers/reset.js"
   },
   "author": "htsbn8",
   "license": "ISC",
@@ -24,7 +26,6 @@
     "express-flash": "^0.0.2",
     "express-mysql-session": "^3.0.0",
     "express-session": "^1.17.3",
-    "mysql": "^2.18.1",
     "mysql2": "^3.2.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",

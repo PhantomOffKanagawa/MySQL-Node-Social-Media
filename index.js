@@ -12,12 +12,14 @@ require('dotenv').config()
 const dbHelper = require('./helpers/dbHelper')
 const routes = require('./routes/router')
 
+var SQLStore = new MySQLStore({}, dbHelper.mediaConnection);
+
 // Middlewear and Express setup
 // Cookie setup
 const sessionMiddleware = session({
   key: process.env.COOKIE_KEY,
   secret: process.env.COOKIE_SECRET,
-  store: new MySQLStore({}, dbHelper.mediaConnection),
+  store: SQLStore,
   resave: false,
   saveUninitialized: false,
   cookie: {

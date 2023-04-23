@@ -96,13 +96,13 @@ SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.Tota
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
-LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = 'Person2'
+LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
 LEFT JOIN POLL pl ON p.ID = pl.PostID
 LEFT JOIN PollVotes pv ON p.ID = pv.PostID
-LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = 'Person2'
+LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = '1234'
 WHERE p.PosterUsername = '1234';
 
 -- THE POST AND REPLY GRABBER ViewerUsername ViewerUsername PostID ViewerUsername ViewerUsername PostID

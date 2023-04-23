@@ -73,7 +73,6 @@ CREATE TABLE Replies ( -- Reference
     FOREIGN KEY (OriginalPostID) REFERENCES POST(ID)
 );
 
-drop table vote;
 CREATE TABLE Vote ( -- Reference
     Username varchar(255) not null, -- fk
     PostID int not null, -- fk

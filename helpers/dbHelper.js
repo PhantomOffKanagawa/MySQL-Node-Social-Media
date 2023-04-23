@@ -1,14 +1,11 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
-
 const mysql2 = require('mysql2')
+require('dotenv').config()
 
 const mediaConnection = mysql2.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  database: 'socialMedia'
+  database: process.env.DB_NAME
 })
 
 function insertUser(
@@ -308,21 +305,50 @@ function createPoll(PollObject, callback) {
   })
 }
 
+function voteFor(Username, PostID, Choice) {
+  mediaConnection.query("replace into vote set ?", {
+    Username: Username,
+    PostID: PostID,
+    Choice: Choice
+  }, function (err, result) {
+    if (err) console.log("Error in voteFor Check: " + err)
+    else {
+      return;
+    }
+  })
+}
+
+var fs = require('fs');
+function reset(callback) {
+  const connection = mysql2.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    multipleStatements: true
+  })
+
+  connection.query(`drop database ${process.env.DB_NAME}; create database ${process.env.DB_NAME}; use ${process.env.DB_NAME};`, (err, result) => {
+    if (err) throw err;
+    else {
+      const miniResetCode = fs.readFileSync('./sql/minified/ResetTables.sql').toString();
+      
+      connection.query(miniResetCode, (err, result) => {
+        if (err) throw err;
+        else {
+          console.log ("Reset Tables Successfully");
+          callback();
+        }
+      })
+    }
+  })
+}
+
 function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err
     console.log('Result:')
     for (let obj of result) {
       console.log(JSON.stringify(obj))
-    }
-  })
-}
-
-function voteFor(Username, PostID, Choice) {
-  mediaConnection.query("replace into vote set ?", {Username: Username, PostID: PostID, Choice: Choice}, function (err, result) {
-    if (err) console.log("Error in voteFor Check: " + err)
-    else {
-      return;
     }
   })
 }
@@ -342,5 +368,6 @@ module.exports = {
   shortenLink,
   getLink,
   voteFor,
+  reset,
   query
 }
