@@ -95,47 +95,49 @@ function newPost(
   contents,
   createdTime,
   posterUsername,
-  shortLinkID,
+  longLink,
   originalID
 ) {
-  const post = {
-    Contents: contents,
-    CreatedTime: createdTime,
-    PosterUsername: posterUsername,
-    ShortLinkID: shortLinkID
-  }
-  const m = contents.match(/(?<=^| )#(\S){1,20}(?= |$|\n)/g),
-    match = (m == null) ? [] : Array.from(new Set(m));
-  mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
-    if (err) console.log(err)
-    else {
-      newID = result.insertId;
-      console.log("newpost + " +  typeof originalID);
-
-      if (typeof originalID != 'undefined') {
-        const reply = {
-          ReplyPostID: newID,
-          OriginalPostID: originalID
-        }
-        mediaConnection.query('INSERT INTO Replies SET ?', reply, function (err, result) {
-          if (err) console.log(err)
-          else {
-            console.log('Result: ' + JSON.stringify(result));
-            console.log("linked reply");
-          }
-        })
-      }
-
-      console.log('Result: ' + JSON.stringify(result[0]));
-      if (match.length != 0) {
-        match.forEach(tag => {
-          newHashtag(tag, function (tag) {
-            includeHashtag(tag, newID)
-          });
-        });
-      }
-      return true
+  shortenLink(longLink, function (id) {
+    const post = {
+      Contents: contents,
+      CreatedTime: createdTime,
+      PosterUsername: posterUsername,
+      ShortLinkID: id
     }
+    const m = contents.match(/(?<=^| )#(\S){1,20}(?= |$|\n)/g),
+      match = (m == null) ? [] : Array.from(new Set(m));
+    mediaConnection.query('INSERT INTO POST SET ?', post, function (err, result) {
+      if (err) console.log(err)
+      else {
+        newID = result.insertId;
+        console.log("newpost + " + typeof originalID);
+
+        if (typeof originalID != 'undefined') {
+          const reply = {
+            ReplyPostID: newID,
+            OriginalPostID: originalID
+          }
+          mediaConnection.query('INSERT INTO Replies SET ?', reply, function (err, result) {
+            if (err) console.log(err)
+            else {
+              console.log('Result: ' + JSON.stringify(result));
+              console.log("linked reply");
+            }
+          })
+        }
+
+        console.log('Result: ' + JSON.stringify(result[0]));
+        if (match.length != 0) {
+          match.forEach(tag => {
+            newHashtag(tag, function (tag) {
+              includeHashtag(tag, newID)
+            });
+          });
+        }
+        return true
+      }
+    })
   })
   console.log("newpost");
 }
@@ -243,9 +245,14 @@ function getTrending(callback) {
           Lifespan: 0
         }, (err, result) => {
           if (err) console.log("Error in get Trending " + err);
-          getTrending(callback);
+          updateTrending(60000, function () {
+            mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
+              trending = result[0]
+              callback(trending)
+            })
+          });
         })
-      } else if(new Date(trending.StartTime).valueOf() + trending.Lifespan <= new Date().valueOf()) {
+      } else if (new Date(trending.StartTime).valueOf() + trending.Lifespan <= new Date().valueOf()) {
         console.log(typeof trending)
         updateTrending(60000, function () {
           mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
@@ -257,6 +264,31 @@ function getTrending(callback) {
         callback(trending)
       }
     }
+  })
+}
+
+function shortenLink(url, callback) {
+  if (url == null) callback(null);
+  mediaConnection.query('select ID from URLSHORTENER where OriginalURL=?', url, (err, result) => {
+    if (err) console.log("shortenLink" + err);
+    else if (result.length == 0) {
+      mediaConnection.query('insert into URLSHORTENER set ?', {
+        OriginalURL: url
+      }, (err, result) => {
+        if (err) console.log("shortenLink2" + err);
+        callback(result.insertId);
+      })
+
+    } else {
+      callback(result[0].ID);
+    }
+  })
+}
+
+function getLink(id, callback) {
+  mediaConnection.query('select OriginalURL from URLSHORTENER where ID=?', id, (err, result) => {
+    if (err) console.log("shortenLink" + err);
+    else callback(result[0].OriginalURL);
   })
 }
 
@@ -282,5 +314,7 @@ module.exports = {
   newHashtag,
   includeHashtag,
   getTrending,
+  shortenLink,
+  getLink,
   query
 }

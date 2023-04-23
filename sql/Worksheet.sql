@@ -5,6 +5,8 @@ SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM U
 
 select * from trending;
 
+select ID from URLSHORTENER where OriginalURL="test.com";
+
 -- GET TOP TRENDING HASHTAG
 with TagUses as (
 select it.Tag, count(it.PostID) as UsedCount
@@ -18,6 +20,8 @@ from Hashtag h
 left join TagUses tu on h.Tag = tu.Tag
 order by tu.UsedCount desc
 limit 1;
+
+select * from trending t where Tag<>"null" order by StartTime desc limit 1;
 
 -- POST GRABBER BY TAG ViewerUsername Tag
 WITH PostLikes AS (
@@ -36,7 +40,7 @@ PostTags AS (
 	From IncludesTag it
 	group by it.PostID
 )
-SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
@@ -44,7 +48,8 @@ LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN IncludesTag it ON p.ID = it.PostID
-WHERE it.Tag = '#777'
+LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+WHERE it.Tag = '#weep2'
 order by TotalLikes desc;
 
 -- POST GRABBER BY USER ViewerUsername WantedUsername
@@ -64,13 +69,14 @@ PostTags AS (
 	From IncludesTag it
 	group by it.PostID
 )
-SELECT p.*, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = 'Person2'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
+LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
 WHERE p.PosterUsername = '1234';
 
 -- THE POST AND REPLY GRABBER ViewerUsername PostID ViewerUsername PostID
@@ -90,23 +96,25 @@ PostTags AS (
 	From IncludesTag it
 	group by it.PostID
 )
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortlinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering, u.OriginalURL
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE p.ID = '4'
+LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+WHERE p.ID = '1'
 UNION ALL
-SELECT p.*, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering, u.OriginalURL
 FROM POST p
 JOIN Replies r ON p.ID = r.ReplyPostID
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
-WHERE r.OriginalPostID = '4'
+LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+WHERE r.OriginalPostID = '1'
 ORDER BY ordering, TotalLikes DESC;
 
 

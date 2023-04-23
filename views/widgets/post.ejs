@@ -26,8 +26,9 @@
                 <% }}); } %>
             </div>
         </div>
-        <div class="card-footer">
-            <span>
+        <div class="card-footer position-relative">
+            <%if (typeof ShortLinkID != 'undefined' && typeof OriginalURL != 'undefined') {%><a class="link-dark position-absolute end-0 mx-2" href="/shortlink/<%- ShortLinkID%>"><%- OriginalURL%></a><%}%>
+            <span><%- ShortLinkID%>
                 <!-- Like Button -->
                 <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
                     onclick="let liked=$(this).children().hasClass('fas');$.post({url:'/likepost',data:{postID:'<%- ID %>', liked: liked}});$(this).children().toggleClass('fas fa-regular').parent().siblings('span').text(parseInt($(this).siblings('span').text()) + 1*(liked ? -1 : 1))">

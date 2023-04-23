@@ -1,0 +1,22 @@
+<link href="./link.css" rel="stylesheet">
+</link>
+<form class="form-signin" action="/shortenlink" method="POST">
+    <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72"
+        height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Enter Link to Shorten</h1>
+    <label for="longLink" class="mb-1">Link (http://example.com)</label>
+    <input type="text" id="longLink" placeholder="http://example.com" required autofocus class="form-control" minlength="1"
+        name="longLink" maxlength="255"
+        pattern="^(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$"
+        <% if(typeof longLink == 'string'){ %>value="<%-longLink%>" readonly<%}%>>
+    <label for="shortLink" class="sr-only">Short Link</label>
+    <input type="text" name="shortLink" id="shortLink" class="form-control mb-3" placeholder="localhost:3000/shortlink/###" value="<% if(typeof shortLink == 'string'){ %><%-shortLink%><%}%>" readonly>
+    <% if(typeof shortLink != 'string'){ %> <button class="btn btn-lg btn-primary btn-block"
+        type="submit">Shorten</button>
+    <%} else {%>
+        <a href="/shortenLink" class="btn btn-lg btn-primary btn-block">Shorten Another Link</a>
+    <%}%>
+</form>
+<script>
+    $("body").addClass('text-center');
+</script>

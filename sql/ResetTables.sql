@@ -21,8 +21,8 @@ create table ExternalLinks ( -- Multi-value Attribute
 
 create table URLSHORTENER ( -- Simple Table
     ID int NOT NULL AUTO_INCREMENT, -- pk
-    OriginalURL varchar(255) not null,
-    ShortenedURL varchar(40) not null,
+    OriginalURL varchar(255) unique not null,
+    -- ShortenedURL varchar(40) unique not null,
     PRIMARY KEY (ID)
 );
 
