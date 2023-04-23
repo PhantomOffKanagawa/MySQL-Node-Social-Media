@@ -96,7 +96,8 @@ function newPost(
   createdTime,
   posterUsername,
   longLink,
-  originalID
+  originalID,
+  PollObject
 ) {
   shortenLink(longLink, function (id) {
     const post = {
@@ -113,7 +114,7 @@ function newPost(
         newID = result.insertId;
         console.log("newpost + " + typeof originalID);
 
-        if (typeof originalID != 'undefined') {
+        if (originalID != null) {
           const reply = {
             ReplyPostID: newID,
             OriginalPostID: originalID
@@ -134,6 +135,11 @@ function newPost(
               includeHashtag(tag, newID)
             });
           });
+        }
+
+        if (PollObject != null) {
+          PollObject.PostID = newID;
+          createPoll(PollObject, function () {});
         }
         return true
       }
@@ -292,12 +298,31 @@ function getLink(id, callback) {
   })
 }
 
+function createPoll(PollObject, callback) {
+  if (PollObject == null) callback();
+  mediaConnection.query('insert into POLL set ?', PollObject, (err, result) => {
+    if (err) console.log(err)
+    else {
+      callback()
+    }
+  })
+}
+
 function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err
     console.log('Result:')
     for (let obj of result) {
       console.log(JSON.stringify(obj))
+    }
+  })
+}
+
+function voteFor(Username, PostID, Choice) {
+  mediaConnection.query("replace into vote set ?", {Username: Username, PostID: PostID, Choice: Choice}, function (err, result) {
+    if (err) console.log("Error in voteFor Check: " + err)
+    else {
+      return;
     }
   })
 }
@@ -316,5 +341,6 @@ module.exports = {
   getTrending,
   shortenLink,
   getLink,
+  voteFor,
   query
 }

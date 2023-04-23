@@ -26,25 +26,58 @@
                 <% }}); } %>
             </div>
         </div>
+
+        <% if(typeof Title != 'undefined' && Title != null) { %>
+        <div class="card mx-5 mt-2 mb-4 p-2">
+            <div class="card-body text-center">
+                <h3 class="text-muted mb-4"><%- Title %></h3>
+                <div class="row" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 1});location.reload();" <% } %>>
+                    <p class="col-2 text-muted p-2 my-auto"><%-Option1Text%></p>
+                    <div class="col-10 p-2 my-auto">
+                        <div class="progress" <% if ( SecondUserChoice == 1) { %>
+                            style="outline: .2em var(--bs-card-border-color) solid"
+                        <% } %>>
+                            <% const vote1 = (VotesFor1 == null) ? 0 : Number(VotesFor1), vote2 = (VotesFor2 == null) ? 0 : Number(VotesFor2), total = (vote1 + vote2 == 0) ? 1 : vote1 + vote2 %>
+                            <div class="progress-bar" role="progressbar" style="width: <%- vote1 / total * 100 %>%;" aria-valuenow="25"
+                                aria-valuemin="0" aria-valuemax="100"><%- vote1 / total * 100 %>%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 2});location.reload();" <% } %>>
+                    <p class="col-2 text-muted p-2 my-auto"><%-Option2Text%></p>
+                    <div class="col-10 p-2 my-auto">
+                        <div class="progress" <% if ( SecondUserChoice == 2) { %>
+                            style="outline: .2em var(--bs-card-border-color) solid"
+                        <% } %>>
+                            <div class="progress-bar" role="progressbar" style="width: <%- vote2 / total * 100 %>%;" aria-valuenow="25"
+                                aria-valuemin="0" aria-valuemax="100"><%- vote2 / total * 100 %>%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
         <div class="card-footer position-relative">
-            <%if (typeof ShortLinkID != 'undefined' && typeof OriginalURL != 'undefined') {%><a class="link-dark position-absolute end-0 mx-2" href="/shortlink/<%- ShortLinkID%>"><%- OriginalURL%></a><%}%>
-            <span><%- ShortLinkID%>
-                <!-- Like Button -->
-                <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
-                    onclick="let liked=$(this).children().hasClass('fas');$.post({url:'/likepost',data:{postID:'<%- ID %>', liked: liked}});$(this).children().toggleClass('fas fa-regular').parent().siblings('span').text(parseInt($(this).siblings('span').text()) + 1*(liked ? -1 : 1))">
-                    <%if (LikedBySecondUser == 1) {%><i class="fas fa-heart"></i><%}else{%>
-                    <i class="fa-regular fa-heart"></i><%}%>
-        </button>
-            <span class="badge badge-primary bg-danger"><%-TotalLikes%></span>
-            </span>
-            <span>
-                <!-- Reply Button -->
-                <button type="button" class="btn btn-sm btn-outline-primary btn-floating"
-                    data-mdb-ripple-color="#ffffff" data-bs-toggle="modal" data-bs-target="#reply-creator-modal"
-                    onclick="$('#replyContents').text(`<%= Contents %>`);$('#originalPostID').val(<%= ID %>)">
-                    <i class="fa-solid fa-reply"></i>
-                </button>
-                <a href="/viewpost/<%-ID%>"><span class="badge badge-primary bg-info"><%-TotalReplies%></span></a>
-            </span>
+            <%if (typeof ShortLinkID != 'undefined' && typeof OriginalURL != 'undefined') {%><a
+                class="link-dark position-absolute end-0 mx-2" href="/shortlink/<%- ShortLinkID%>"><%- OriginalURL%></a><%}%>
+        <span><%- ShortLinkID%>
+            <!-- Like Button -->
+            <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
+                onclick="let liked=$(this).children().hasClass('fas');$.post({url:'/likepost',data:{postID:'<%- ID %>', liked: liked}});$(this).children().toggleClass('fas fa-regular').parent().siblings('span').text(parseInt($(this).siblings('span').text()) + 1*(liked ? -1 : 1))">
+                <%if (LikedBySecondUser == 1) {%><i class="fas fa-heart"></i><%}else{%>
+                <i class="fa-regular fa-heart"></i><%}%>
+            </button>
+        <span class="badge badge-primary bg-danger"><%-TotalLikes%></span>
+                </span>
+                <span>
+                    <!-- Reply Button -->
+                    <button type="button" class="btn btn-sm btn-outline-primary btn-floating"
+                        data-mdb-ripple-color="#ffffff" data-bs-toggle="modal" data-bs-target="#reply-creator-modal"
+                        onclick="$('#replyContents').text(`<%= Contents %>`);$('#originalPostID').val(<%= ID %>)">
+                        <i class="fa-solid fa-reply"></i>
+                    </button>
+                    <a href="/viewpost/<%-ID%>"><span class="badge badge-primary bg-info"><%-TotalReplies%></span></a>
+                </span>
         </div>
     </div>

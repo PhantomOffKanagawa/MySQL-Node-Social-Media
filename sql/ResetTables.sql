@@ -73,12 +73,14 @@ CREATE TABLE Replies ( -- Reference
     FOREIGN KEY (OriginalPostID) REFERENCES POST(ID)
 );
 
+drop table vote;
 CREATE TABLE Vote ( -- Reference
     Username varchar(255) not null, -- fk
     PostID int not null, -- fk
     Choice int not null,
     foreign key (Username) REFERENCES USER(Username),
-    FOREIGN KEY (PostID) REFERENCES POST(ID)
+    FOREIGN KEY (PostID) REFERENCES POST(ID),
+    constraint u_vote unique(Username, PostID)
 );
 
 CREATE TABLE IncludesTag ( -- Reference

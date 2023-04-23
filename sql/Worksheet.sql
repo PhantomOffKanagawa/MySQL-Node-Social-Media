@@ -3,7 +3,10 @@ select * from user
 order by CreatedTime desc limit 1;
 SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = '1234';
 
-select * from trending;
+select * from POLL;
+select * from vote where Username="1234" and PostID="11";
+INSERT INTO vote (Username, PostID, Choice) VALUES("1234", "11", 2) ON DUPLICATE KEY UPDATE;
+REPLACE INTO vote (Username, PostID, Choice) VALUES ("1234", "11", 2);
 
 select ID from URLSHORTENER where OriginalURL="test.com";
 
@@ -23,7 +26,10 @@ limit 1;
 
 select * from trending t where Tag<>"null" order by StartTime desc limit 1;
 
--- POST GRABBER BY TAG ViewerUsername Tag
+insert into Vote
+values ("1234", 11, 1);
+
+-- POST GRABBER BY TAG ViewerUsername ViewerUsername Tag
 WITH PostLikes AS (
     SELECT p.ID, COUNT(l.PostID) AS TotalLikes
     FROM POST p
@@ -39,8 +45,15 @@ PostTags AS (
     Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags
 	From IncludesTag it
 	group by it.PostID
+),
+PollVotes AS (
+    Select v.PostID, sum(if(Choice = 1, 1, 0)) as VotesFor1, sum(if(Choice = 2, 1, 0)) as VotesFor2
+	From Vote v
+	group by v.PostID
 )
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags,
+	CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text, pv.VotesFor1, 
+    pv.VotesFor2, v.Choice as SecondUserChoice
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
@@ -49,10 +62,13 @@ LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN IncludesTag it ON p.ID = it.PostID
 LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
-WHERE it.Tag = '#weep2'
+LEFT JOIN POLL pl ON p.ID = pl.PostID
+LEFT JOIN PollVotes pv ON p.ID = pv.PostID
+LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = '1234'
+WHERE it.Tag = '#test'
 order by TotalLikes desc;
 
--- POST GRABBER BY USER ViewerUsername WantedUsername
+-- POST GRABBER BY USER ViewerUsername ViewerUsername WantedUsername
 WITH PostLikes AS (
     SELECT p.ID, COUNT(l.PostID) AS TotalLikes
     FROM POST p
@@ -68,8 +84,15 @@ PostTags AS (
     Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags
 	From IncludesTag it
 	group by it.PostID
+),
+PollVotes AS (
+    Select v.PostID, sum(if(Choice = 1, 1, 0)) as VotesFor1, sum(if(Choice = 2, 1, 0)) as VotesFor2
+	From Vote v
+	group by v.PostID
 )
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags,
+	CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text, pv.VotesFor1, 
+    pv.VotesFor2, v.Choice as SecondUserChoice
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
@@ -77,9 +100,12 @@ LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = 'Person2'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+LEFT JOIN POLL pl ON p.ID = pl.PostID
+LEFT JOIN PollVotes pv ON p.ID = pv.PostID
+LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = 'Person2'
 WHERE p.PosterUsername = '1234';
 
--- THE POST AND REPLY GRABBER ViewerUsername PostID ViewerUsername PostID
+-- THE POST AND REPLY GRABBER ViewerUsername ViewerUsername PostID ViewerUsername ViewerUsername PostID
 WITH PostLikes AS (
     SELECT p.ID, COUNT(l.PostID) AS TotalLikes
     FROM POST p
@@ -95,8 +121,15 @@ PostTags AS (
     Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags
 	From IncludesTag it
 	group by it.PostID
+),
+PollVotes AS (
+    Select v.PostID, sum(if(Choice = 1, 1, 0)) as VotesFor1, sum(if(Choice = 2, 1, 0)) as VotesFor2
+	From Vote v
+	group by v.PostID
 )
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering, u.OriginalURL
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags,
+	CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 1 AS ordering, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text, 
+    pv.VotesFor1, pv.VotesFor2, v.Choice as SecondUserChoice
 FROM POST p
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
 LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
@@ -104,9 +137,14 @@ LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+LEFT JOIN POLL pl ON p.ID = pl.PostID
+LEFT JOIN PollVotes pv ON p.ID = pv.PostID
+LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = '1234'
 WHERE p.ID = '1'
 UNION ALL
-SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering, u.OriginalURL
+SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r.OriginalPostID, pt.IncludedTags,
+	CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, 2 AS ordering, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text,
+    pv.VotesFor1, pv.VotesFor2, v.Choice as SecondUserChoice
 FROM POST p
 JOIN Replies r ON p.ID = r.ReplyPostID
 LEFT JOIN PostLikes pl ON p.ID = pl.ID
@@ -114,6 +152,9 @@ LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID
 LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = '1234'
 LEFT JOIN PostTags pt ON p.ID = pt.PostID
 LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID
+LEFT JOIN POLL pl ON p.ID = pl.PostID
+LEFT JOIN PollVotes pv ON p.ID = pv.PostID
+LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = '1234'
 WHERE r.OriginalPostID = '1'
 ORDER BY ordering, TotalLikes DESC;
 

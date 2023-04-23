@@ -37,7 +37,7 @@
                                     name="longLink" maxlength="255"
                                     pattern="^(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$">
                             </div>
-                            <div class="form-group mb-4 position-relative">
+                            <div class="form-group mb-5 position-relative">
                                 <label class="control-label" for="contents">Post Contents</label>
                                 <div class="">
                                     <textarea class="form-control mb-1" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>contents" name="contents"
@@ -45,6 +45,19 @@
                                         maxlength="255" minlength="1" required></textarea>
                                     <span class="help-block text-muted position-absolute end-0" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>charRemaining">0/255</span>
                                     <span class="help-block text-muted position-absolute start-0" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining">0/5 tags</span>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3 position-relative">
+                                <label class="control-label" for="pollName">Optional Poll Name</label>
+                                <input type="text" placeholder="Poll Name" autofocus class="form-control" minlength="1"
+                                    name="pollName" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>PN" maxlength="40">
+                                <div class="collapse" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>pollCollapse">
+                                    
+                                    <input type="text" placeholder="Option 1" autofocus class="form-control" minlength="1"
+                                        name="option1" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>OP1" maxlength="40">
+                                    <input type="text" placeholder="Option 2" autofocus class="form-control" minlength="1"
+                                        name="option2" id="<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>OP2" maxlength="40">
+
                                 </div>
                             </div>
     
@@ -77,6 +90,13 @@
                 } else {
                     $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>tagsRemaining").removeClass('text-danger').addClass('text-muted');
                     this.setCustomValidity('');
+                }
+            });
+            $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>PN").keyup(function(){
+                if($(this).val() == "") {
+                    $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>pollCollapse").collapse("hide");
+                } else {
+                    $("#<% if(typeof type == 'string' && type=="reply"){ %>r<%}%>pollCollapse").collapse("show");
                 }
             });
         });
