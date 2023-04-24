@@ -16,6 +16,7 @@
     "nodemon": "^2.0.22"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "connect-ensure-login": "^0.1.1",

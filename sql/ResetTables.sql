@@ -1,4 +1,4 @@
-drop database socialMedia;
+drop database if exists socialMedia;
 create database socialMedia;
 use socialMedia;
 

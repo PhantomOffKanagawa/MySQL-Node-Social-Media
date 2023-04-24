@@ -326,32 +326,6 @@ function voteFor(Username, PostID, Choice) {
   })
 }
 
-var fs = require('fs');
-
-function reset(callback) {
-  const connection = mysql2.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    multipleStatements: true
-  })
-
-  connection.query(`drop database ${process.env.DB_NAME}; create database ${process.env.DB_NAME}; use ${process.env.DB_NAME};`, (err, result) => {
-    if (err) throw err;
-    else {
-      const miniResetCode = fs.readFileSync('./sql/minified/ResetTables.sql').toString();
-
-      connection.query(miniResetCode, (err, result) => {
-        if (err) throw err;
-        else {
-          console.log("Reset Tables Successfully");
-          callback();
-        }
-      })
-    }
-  })
-}
-
 function query(query) {
   mediaConnection.query(query, function (err, result) {
     if (err) throw err
@@ -377,6 +351,5 @@ module.exports = {
   shortenLink,
   getLink,
   voteFor,
-  reset,
   query
 }
