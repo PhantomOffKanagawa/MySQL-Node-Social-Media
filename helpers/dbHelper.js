@@ -225,6 +225,7 @@ function updateTrending(lifespan, callback) {
     if (err) console.log("Error in update Trending " + err);
     // else if (result.length == 0)
     //   return;
+    if (result.length == 0) callback(false);
     else {
       mediaConnection.query('insert into Trending set ?', {
         StartTime: new Date().toISOString(),
@@ -232,7 +233,7 @@ function updateTrending(lifespan, callback) {
         Lifespan: lifespan
       }, (err, result) => {
         if (err) console.log("Error in update Trending " + err);
-        callback()
+        callback(true)
       })
     }
   });
@@ -242,7 +243,6 @@ function getTrending(callback) {
   let trending;
   mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
     if (err) console.error(err);
-    if (result.length == 0) callback([]);
     else {
       trending = result[0];
       console.log(typeof trending)
@@ -252,12 +252,15 @@ function getTrending(callback) {
           Tag: null,
           Lifespan: 0
         }, (err, result) => {
-          if (err) console.log("Error in get Trending " + err);
-          updateTrending(60000, function () {
-            mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
-              trending = result[0]
-              callback(trending)
-            })
+          // if (err) console.log("Error in get Trending " + err);
+          updateTrending(60000, function (hadTag) {
+            if (!hadTag) callback([]);
+            else {
+              mediaConnection.query('select * from trending t where Tag<>"null" order by StartTime desc limit 1', (err, result) => {
+                trending = result[0]
+                callback(trending)
+              })
+            }
           });
         })
       } else if (new Date(trending.StartTime).valueOf() + trending.Lifespan <= new Date().valueOf()) {

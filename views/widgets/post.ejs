@@ -31,7 +31,7 @@
         <div class="card mx-5 mt-2 mb-4 p-2">
             <div class="card-body text-center">
                 <h3 class="text-muted mb-4"><%- Title %></h3>
-                <div class="row" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 1});location.reload();" <% } %>>
+                <div class="row" style="cursor:pointer" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 1});location.reload();" <% } %>>
                     <p class="col-2 text-muted p-2 my-auto"><%-Option1Text%></p>
                     <div class="col-10 p-2 my-auto">
                         <div class="progress" <% if ( SecondUserChoice == 1) { %>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 2});location.reload();" <% } %>>
+                <div class="row" style="cursor:pointer" <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged==true){ %> onclick="$.post('/votefor', {postID: <%-ID%>, choice: 2});location.reload();" <% } %>>
                     <p class="col-2 text-muted p-2 my-auto"><%-Option2Text%></p>
                     <div class="col-10 p-2 my-auto">
                         <div class="progress" <% if ( SecondUserChoice == 2) { %>
@@ -61,9 +61,9 @@
         <div class="card-footer position-relative">
             <%if (typeof ShortLinkID != 'undefined' && typeof OriginalURL != 'undefined') {%><a
                 class="link-dark position-absolute end-0 mx-2" href="/shortlink/<%- ShortLinkID%>"><%- OriginalURL%></a><%}%>
-        <span><%- ShortLinkID%>
+        <span>
             <!-- Like Button -->
-            <button type="button" class="btn btn-sm btn-outline-danger btn-floating" data-mdb-ripple-color="#ffffff"
+            <button type="button" class="btn btn-sm btn-outline-danger btn-floating mr-2" data-mdb-ripple-color="#ffffff"
                 onclick="let liked=$(this).children().hasClass('fas');$.post({url:'/likepost',data:{postID:'<%- ID %>', liked: liked}});$(this).children().toggleClass('fas fa-regular').parent().siblings('span').text(parseInt($(this).siblings('span').text()) + 1*(liked ? -1 : 1))">
                 <%if (LikedBySecondUser == 1) {%><i class="fas fa-heart"></i><%}else{%>
                 <i class="fa-regular fa-heart"></i><%}%>
