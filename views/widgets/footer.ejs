@@ -45,6 +45,8 @@
 
 <% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
 <%- include("postCreator") %>
+<% } %>
+
 <script>
     $(document).ready(function () {
         $("body").css("margin-bottom", $("footer").height());
@@ -53,4 +55,3 @@
         });
     });
 </script>
-<% } %>

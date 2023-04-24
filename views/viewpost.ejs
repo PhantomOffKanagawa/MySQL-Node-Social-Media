@@ -25,4 +25,6 @@
 <%- include("widgets/accountModals.ejs") %>
 <%}%>
 
+<% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
 <%- include("widgets/postCreator", {type: "reply"}) %>
+<% } %>

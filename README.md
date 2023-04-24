@@ -77,7 +77,8 @@ To start the web server with nodemon run
 - #Hashtags
 - 3rd Normal Form Datbase Compliance
 - Trending Page for Top #Hashtag
-- Synthetic Example Data TODO
+- Synthetic Example Data
+- Code for Generating New Synthetic Data 
 ## File/Directory Glossary
 
 `ls *.?*`
@@ -91,15 +92,16 @@ To start the web server with nodemon run
 
 `ls ./helpers` is a folder of Node.js helper modules
  - `dbHelper.js` interacts with the database and passes access to it as a module
+ - `generate.js` generates new synthetic data, adjustable parameters at the top
  - `passportHelper.js` initializes passport and sets serialize/deserialize methods 
  - `reset.js` is a Node.js file run by npm commands `fresh` and `reset` and simply reformats the database
-- `.router.js` manages all the POST and GET middle-man for express
+ - `.router.js` manages all the POST and GET middle-man for express
 
 `ls ./sql` is a folder with all the SQL files
 - `minified` contains copies of some of the files in `./sql` but in a one line to allow running from file
-- `DummyData.sql` contains synthetic data inserts
 - `Queries.sql` contains the SQL Queries for many of the function calls **TODO UPDATE**
 - `ResetTables.sql` contains the SQL to reset the tables
+- `SQLinserts.sql` contains synthetic data inserts
 - `Worksheet.sql` was a file used as scratch paper when developing SQL Queries
 
 `ls ./views` contains the ejs files used for client side rendering

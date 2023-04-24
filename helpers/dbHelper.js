@@ -128,8 +128,8 @@ function newPost(
         console.log('Result: ' + JSON.stringify(result[0]));
         if (match.length != 0) {
           match.forEach(tag => {
-            newHashtag(tag, function (tag) {
-              includeHashtag(tag, newID)
+            newHashtag(tag.toLowerCase(), function (tag) {
+              includeHashtag(tag.toLowerCase(), newID)
             });
           });
         }

@@ -31,7 +31,17 @@ connection.query(`drop database if exists ${process.env.DB_NAME}; create databas
                 })
                 new MySQLStore({}, mediaConnection)
 
-                process.exit()
+                console.log("SQL Store successfully initialized");
+
+                const miniInsertCode = fs.readFileSync('./sql/minified/SQLinserts.sql').toString();
+        
+                connection.query(miniInsertCode, (err, result) => {
+                    if (err) throw err;
+                    else {
+                        console.log("Synthetic Data Successfully Inserted")
+
+                        process.exit()
+                    }});
             }
         })
     }

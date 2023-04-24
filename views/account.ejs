@@ -76,7 +76,9 @@
 <%- include("widgets/accountModals.ejs") %>
 <%}%>
 
-<%- include("widgets/postCreator", {type:"reply"}) %>
+<% if(typeof simpleIsLogged != 'undefined' && simpleIsLogged == true) { %>
+<%- include("widgets/postCreator", {type: "reply"}) %>
+<% } %>
 
 <script>
   const user = JSON.parse(`<%-user%>`);
