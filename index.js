@@ -10,7 +10,7 @@ const expressLayouts = require('express-ejs-layouts')
 require('dotenv').config()
 
 const dbHelper = require('./helpers/dbHelper')
-const routes = require('./routes/router')
+const routes = require('./helpers/router')
 
 var SQLStore = new MySQLStore({}, dbHelper.mediaConnection);
 

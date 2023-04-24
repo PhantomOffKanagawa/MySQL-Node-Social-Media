@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const dbHelper = require('../helpers/dbHelper')
-const passport = require('../helpers/passportHelper')
+const dbHelper = require('./dbHelper')
+const passport = require('./passportHelper')
 const crypto = require('crypto')
 
 router.use(passport.initialize())
@@ -161,6 +161,15 @@ router.get('/trending', (req, res, next) => {
       (err, rows) => {
         if (err) throw console.error(err)
         if (!err) {
+          if (rows.length == 0) {
+            res.render('viewpost', {
+              title: 'No tags used yet',
+              simpleIsLogged: isAuthBool(req),
+              editable: false,
+              header: `No tags used yet`,
+              secondary: ``
+            })
+          }
           posts = rows;
           res.render('viewpost', {
             title: 'The Trending Tag is ' + trending.Tag,
