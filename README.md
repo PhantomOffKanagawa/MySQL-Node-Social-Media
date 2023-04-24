@@ -80,6 +80,15 @@ To start the web server with nodemon run
 - Synthetic Example Data TODO
 ## File/Directory Glossary
 
+`ls *.?*`
+- `.env.example` an example .env file with all the variables that need to be included
+- `.gitignore` the .gitignore files for what files not to include in source control
+- `index.js` the main Node.js file that calls in helpers and starts the express server
+- `package-lock.json` full package info
+- `package.json` overall package info
+- `Phase 3 ERD Diagram in DBML.md` DBML for ERD Diagram of the table **TODO** UPDATE
+- `README.md` *this*
+
 `ls ./helpers` is a folder of Node.js helper modules
  - `dbHelper.js` interacts with the database and passes access to it as a module
  - `passportHelper.js` initializes passport and sets serialize/deserialize methods 
@@ -104,6 +113,13 @@ To start the web server with nodemon run
 - `viewpost.ejs` the ejs file for viewing specific posts and their replies or tags
 
 `ls ./views/widgets`
+- `accountModals.ejs` contains the bootstrap Modals for link and account editing
+- `footer.ejs` contains the footer html
+- `header.ejs` contains the header html
+- `linkLI.ejs` contains the html for the list items for account ExternalLinks
+- `post.ejs` contains the html for the posts
+- `postCreator.ejs` contains the html for creating replies and posts
+
 
 ## Tech Stack
 
