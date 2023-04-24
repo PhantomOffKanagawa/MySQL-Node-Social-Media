@@ -29,12 +29,9 @@ const sessionMiddleware = session({
 
 app.use(sessionMiddleware)
 
-// Serve files under static folder as static
-app.use(express.static('static'))
-
 // Use express layouts based on created default layout
 app.use(expressLayouts)
-app.set('layout', './layouts/default')
+app.set('layout', './0_skeleton')
 
 app.use(express.urlencoded({ extended: false }))
 

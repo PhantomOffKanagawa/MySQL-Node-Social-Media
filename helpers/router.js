@@ -169,6 +169,7 @@ router.get('/trending', (req, res, next) => {
               header: `No tags used yet`,
               secondary: ``
             })
+            return;
           }
           posts = rows;
           res.render('viewpost', {
