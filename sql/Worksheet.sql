@@ -1,14 +1,16 @@
 UPDATE USER SET Description="" WHERE Username='1234';
-select * from user
+select * from user;
 order by CreatedTime desc limit 1;
 SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = '1234';
 
-select * from POLL;
+select * from user;
 select * from vote where Username="1234" and PostID="11";
 INSERT INTO vote (Username, PostID, Choice) VALUES("1234", "11", 2) ON DUPLICATE KEY UPDATE;
 REPLACE INTO vote (Username, PostID, Choice) VALUES ("1234", "11", 2);
 
 select ID from URLSHORTENER where OriginalURL="test.com";
+
+select * from trending t where Tag<>"null" order by StartTime desc limit 1;
 
 -- GET TOP TRENDING HASHTAG
 with TagUses as (
