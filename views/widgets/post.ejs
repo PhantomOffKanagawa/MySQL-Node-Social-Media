@@ -39,7 +39,7 @@
                         <% } %>>
                             <% const vote1 = (VotesFor1 == null) ? 0 : Number(VotesFor1), vote2 = (VotesFor2 == null) ? 0 : Number(VotesFor2), total = (vote1 + vote2 == 0) ? 1 : vote1 + vote2 %>
                             <div class="progress-bar" role="progressbar" style="width: <%- vote1 / total * 100 %>%;" aria-valuenow="25"
-                                aria-valuemin="0" aria-valuemax="100"><%- vote1 / total * 100 %>%</div>
+                                aria-valuemin="0" aria-valuemax="100"><%- vote1 %> Votes</div>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                             style="outline: .2em var(--bs-card-border-color) solid"
                         <% } %>>
                             <div class="progress-bar" role="progressbar" style="width: <%- vote2 / total * 100 %>%;" aria-valuenow="25"
-                                aria-valuemin="0" aria-valuemax="100"><%- vote2 / total * 100 %>%</div>
+                                aria-valuemin="0" aria-valuemax="100"><%- vote2 %> Votes</div>
                         </div>
                     </div>
                 </div>
