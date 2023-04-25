@@ -14,13 +14,12 @@ const verifyCallback = (username, password, done) => {
       if (results.length == 0) return done(null, false);
 
       const isValid = validPassword(password, results[0].Hash, results[0].Salt);
-      user = {
-        username: results[0].Username,
-        hash: results[0].hash,
-        salt: results[0].salt
-      };
       if (isValid) {
-        return done(null, user);
+        return done(null, {
+          username: results[0].Username,
+          hash: results[0].hash,
+          salt: results[0].salt
+        });
       } else {
         return done(null, false);
       }
@@ -61,7 +60,7 @@ passport.deserializeUser(function (username, done) {
 
 // Helper that checks if a provided password attempt matches the previous hash
 function validPassword (password, hash, salt) {
-  var hashVerify = crypto
+  const hashVerify = crypto
     .pbkdf2Sync(password, salt, 10000, 60, 'sha512')
     .toString('hex')
   return hash === hashVerify

@@ -12,7 +12,8 @@ require('dotenv').config()
 const dbHelper = require('./helpers/dbHelper')
 const routes = require('./helpers/router')
 
-var SQLStore = new MySQLStore({}, dbHelper.mediaConnection);
+// Initialize MySQLStore for session
+const SQLStore = new MySQLStore({}, dbHelper.mediaConnection);
 
 // Middlewear and Express setup
 // Cookie setup
@@ -40,12 +41,6 @@ app.set('view engine', 'ejs')
 
 // Use routes file for GET / POST
 app.use(routes)
-
-// app.use((req,res,next)=>{
-//   console.log(req.session);
-//   console.log(req.user);
-//   next();
-// });
 
 // Start up Express server
 const server = app.listen(3000, () => {

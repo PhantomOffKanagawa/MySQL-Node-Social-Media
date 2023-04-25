@@ -34,6 +34,8 @@ Install dependencies
   npm install
 ```
 
+Create a .env from the example
+
 Start the server
 
 ```bash
