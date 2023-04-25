@@ -14,6 +14,7 @@ An example is provided in `.env.example` with example values supplied
 `DB_USERNAME`
 `DB_PASSWORD`
 `DB_NAME`
+
 ## To Run Locally
 
 Clone the project
@@ -34,7 +35,11 @@ Install dependencies
   npm install
 ```
 
-Create a .env from the example
+Create a .env from the example and change the variables as specified in **Environment Variables**
+
+```bash
+  cp .env.example .env
+```
 
 Start the server
 
@@ -46,6 +51,7 @@ With that the server should be up and running and you can go to http://localhost
 
 > **Warning**
 > This will drop any tables with the name provided in the .env (Default is `socialmedia`) on the provided database and replace it with this projects data
+> 
 ## npm Scripts
 
 To reset the tables for this project run
@@ -57,7 +63,7 @@ To reset the tables for this project run
 > **Warning**
 > This will drop any tables with the name provided in the .env (Default is `socialmedia`) on the provided database and replace it with this projects data
 
-To start the web server without a fresh database run
+To start the web server without a resetting the database run
 
 ```bash
   npm run start
@@ -68,6 +74,7 @@ To start the web server with nodemon run
 ```bash
   npm run dev
 ```
+
 ## Features
 
 - Encrypted Passwords
@@ -80,7 +87,8 @@ To start the web server with nodemon run
 - 3rd Normal Form Datbase Compliance
 - Trending Page for Top #Hashtag
 - Synthetic Example Data
-- Code for Generating New Synthetic Data 
+- Code for Generating New Synthetic Data
+-  
 ## File/Directory Glossary
 
 `ls *.?*`
