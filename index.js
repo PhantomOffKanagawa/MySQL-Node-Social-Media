@@ -40,17 +40,6 @@ app.use(express.json({
 // Use routes file for GET / POST
 app.use(routes)
 
-
-
-// Use express layouts based on created default layout
-app.use(expressLayouts)
-app.set('layout', './0_skeleton')
-
-// app.use(express.urlencoded({ extended: false }))
-
-// Use ejs view engine
-app.set('view engine', 'ejs')
-
 // Start up Express server
 const server = app.listen(8082, () => {
   console.log(`Listening on port ${server.address().port}`)
