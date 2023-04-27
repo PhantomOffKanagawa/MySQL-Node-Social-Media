@@ -35,16 +35,28 @@ Install dependencies
   npm install
 ```
 
+Install dependencies under react-frontend
+
+```bash
+  npm run install-react
+```
+
 Create a .env from the example and change the variables as specified in **Environment Variables**
 
 ```bash
   cp .env.example .env
 ```
 
-Start the server
+Start the backend server
 
 ```bash
   npm run fresh
+```
+
+Seperately start the frontend
+
+```bash
+  npm run start-react
 ```
 
 With that the server should be up and running and you can go to http://localhost:3000 to access the homepage of the "Social Media" site

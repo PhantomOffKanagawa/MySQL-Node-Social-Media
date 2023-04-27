@@ -7,7 +7,9 @@
     "start": "node index.js",
     "fresh": "node helpers/reset.js && node index.js",
     "dev": "nodemon index.js",
-    "reset": "node helpers/reset.js"
+    "reset": "node helpers/reset.js",
+    "install-react": "cd react-frontend && npm install",
+    "start-react": "cd react-frontend && npm run start"
   },
   "author": "htsbn8",
   "license": "ISC",
@@ -20,6 +22,7 @@
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "connect-ensure-login": "^0.1.1",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
