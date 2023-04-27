@@ -7,6 +7,7 @@ const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session)
 const expressLayouts = require('express-ejs-layouts')
 
+const cors = require('cors');
 require('dotenv').config()
 
 const dbHelper = require('./helpers/dbHelper')
@@ -30,19 +31,31 @@ const sessionMiddleware = session({
 
 app.use(sessionMiddleware)
 
-// Use express layouts based on created default layout
-app.use(expressLayouts)
-app.set('layout', './0_skeleton')
+// cors
+app.use(cors({
+  origin: 'http://localhost:300',
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-app.use(express.urlencoded({ extended: false }))
-
-// Use ejs view engine
-app.set('view engine', 'ejs')
+app.use(express.json({
+  extended: false
+}));
 
 // Use routes file for GET / POST
 app.use(routes)
 
+
+
+// Use express layouts based on created default layout
+app.use(expressLayouts)
+app.set('layout', './0_skeleton')
+
+// app.use(express.urlencoded({ extended: false }))
+
+// Use ejs view engine
+app.set('view engine', 'ejs')
+
 // Start up Express server
-const server = app.listen(3000, () => {
+const server = app.listen(8082, () => {
   console.log(`Listening on port ${server.address().port}`)
 })
