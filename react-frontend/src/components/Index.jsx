@@ -47,7 +47,7 @@ const Index = (props) => {
     <div>
       <Header simpleIsLogged={simpleIsLogged} />
 
-      <div class="px-4 py-5 my-3 text-center">
+      <div class="px-4 py-5 mt-3 text-center min-vh-100">
         <img
           class="d-block mx-auto mb-4"
           src="https://uilogos.co/img/logomark/u-mark.png"
@@ -64,20 +64,21 @@ const Index = (props) => {
             facere sunt.
           </p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            { !simpleIsLogged &&
+            { !simpleIsLogged && (
             <a
               type="button"
-              class="btn btn-primary btn-lg px-4 gap-3 me-2"
+              class="btn btn-primary btn-lg px-4 gap-3 mb-5 me-2"
               href="/login"
             >
               Log In
             </a>
-}
+            )}
           </div>
         </div>
+        <div class="section"></div>
       </div>
 
-      <div class="section"></div>
+
 
       <div className="container">
         <div style={{ padding: 20 }}>
