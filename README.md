@@ -20,7 +20,7 @@ An example is provided in `.env.example` with example values supplied
 Clone the project
 
 ```bash
-  git clone https://github.com/PhantomOffKanagawa/MySQL-Node-Social-Media
+  git clone -b MERN-Stack-Version https://github.com/PhantomOffKanagawa/MySQL-Node-Social-Media
 ```
 
 Go to the project directory
