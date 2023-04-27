@@ -1,7 +1,7 @@
 
 # Node.js & MySQL Social Media Project
 
-A basic social media platform held on a local MySQL database with an Express frontend managed by Node.js
+A basic social media platform held on a local MySQL database with an React.js frontend managed by Node.js
 
 
 ## Environment Variables
@@ -109,7 +109,6 @@ To start the web server with nodemon run
 - `index.js` the main Node.js file that calls in helpers and starts the express server
 - `package-lock.json` full package info
 - `package.json` overall package info
-- `Phase 3 ERD Diagram in DBML.md` DBML for ERD Diagram of the table **TODO** UPDATE
 - `README.md` *this*
 
 `ls ./helpers` is a folder of Node.js helper modules
@@ -121,33 +120,14 @@ To start the web server with nodemon run
 
 `ls ./sql` is a folder with all the SQL files
 - `minified` contains copies of some of the files in `./sql` but in a one line to allow running from file
-- `Queries.sql` contains the SQL Queries for many of the function calls **TODO UPDATE**
+- `Queries.sql` contains the SQL Queries for many of the function calls
 - `ResetTables.sql` contains the SQL to reset the tables
 - `SQLinserts.sql` contains synthetic data inserts
-- `Worksheet.sql` was a file used as scratch paper when developing SQL Queries
-
-`ls ./views` contains the ejs files used for client side rendering
-- `widgets` contains smaller ejs components used in other ejs files
-- `0_skeleton` the main ejs layout used as a template for all others
-- `account.ejs` the ejs file used to render `/myaccount` and `/account/username` pages
-- `index.ejs` the ejs file for the main page
-- `linkShortener.ejs` the ejs file for the link shortening page
-- `login.ejs` the ejs file for the login page
-- `register.ejs` the ejs file for the register page
-- `viewpost.ejs` the ejs file for viewing specific posts and their replies or tags
-
-`ls ./views/widgets`
-- `accountModals.ejs` contains the bootstrap Modals for link and account editing
-- `footer.ejs` contains the footer html
-- `header.ejs` contains the header html
-- `linkLI.ejs` contains the html for the list items for account ExternalLinks
-- `post.ejs` contains the html for the posts
-- `postCreator.ejs` contains the html for creating replies and posts
 
 
 ## Tech Stack
 
-**Client:** Bootstrap, JQuery, EJS
+**Client:** Bootstrap, JQuery, React
 
 **Server:** Node, Express
 

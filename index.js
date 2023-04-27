@@ -1,11 +1,7 @@
-const crypto = require('crypto')
-const mysql = require('mysql2')
-
 const express = require('express')
 const app = express()
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session)
-const expressLayouts = require('express-ejs-layouts')
 
 const cors = require('cors');
 require('dotenv').config()
