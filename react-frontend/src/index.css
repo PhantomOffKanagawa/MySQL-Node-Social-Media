@@ -13,6 +13,7 @@ code {
 }
 
 .section {
+  margin-top: 15vh;
   height: 10vh;
   position: relative;
   width: 100%;

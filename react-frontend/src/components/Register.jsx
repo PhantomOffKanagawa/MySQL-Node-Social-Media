@@ -44,8 +44,8 @@ const Register = (props) => {
         <div className="col-lg-3 mx-auto">
             <form onSubmit={onSubmit}>
                 <div className="mb-4">
-                    <label htmlFor="username" className="form-label" pattern="^[-a-zA-Z0-9@:%._\+~#=]*$">Username</label>
-                    <input type="text" required className="form-control" name="username" placeholder="Username"
+                    <label htmlFor="username" className="form-label">Username</label>
+                    <input type="text" required className="form-control" name="username" placeholder="Username" pattern="^[-a-zA-Z0-9@:%._\+~#=]*$"
                   onChange={onChange} />
                     <span className="help-block">Letters, Numbers and "@:%._\+~#=" only</span>
                 </div>
