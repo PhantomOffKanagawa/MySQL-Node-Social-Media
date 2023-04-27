@@ -89,15 +89,13 @@ To start the web server with nodemon run
 
 ## Features
 
+- React.JS Frontend
+- Node.JS Backend
+- MySQL Database
 - Encrypted Passwords
 - Cookie Based Session Tracking
-- Polls
 - Likes
-- Replies
-- URL Shortener
-- #Hashtags
 - 3rd Normal Form Datbase Compliance
-- Trending Page for Top #Hashtag
 - Synthetic Example Data
 - Code for Generating New Synthetic Data
 -  
