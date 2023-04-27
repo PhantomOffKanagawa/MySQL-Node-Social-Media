@@ -27,7 +27,7 @@ router.get('/api/myaccount', isAuth, (req, res, next) => {
   console.log("myaccount get")
   // Gets all posts by user, explained in Queries
   dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ), PollVotes AS ( Select v.PostID, sum(if(Choice = 1, 1, 0)) as VotesFor1, sum(if(Choice = 2, 1, 0)) as VotesFor2 From Vote v group by v.PostID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text, pv.VotesFor1, pv.VotesFor2, v.Choice as SecondUserChoice FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID LEFT JOIN POLL pl ON p.ID = pl.PostID LEFT JOIN PollVotes pv ON p.ID = pv.PostID LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = ? WHERE p.PosterUsername = ?;', [req.session.passport.user, req.session.passport.user, req.session.passport.user],
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, pl.TotalLikes, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? WHERE p.PosterUsername = ?;', [req.session.passport.user, req.session.passport.user],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -36,7 +36,7 @@ router.get('/api/myaccount', isAuth, (req, res, next) => {
     });
   // get relvent user information including external links
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.session.passport.user,
+    'SELECT USER.Username, Birthday, Description, Location FROM USER WHERE USER.Username = ?', req.session.passport.user,
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -53,7 +53,7 @@ router.get('/api/account/:username', (req, res, next) => {
   // Resiliant username variable in case user not auth
   const username = (isAuthBool(req)) ? req.session.passport.user : null;
   dbHelper.mediaConnection.query(
-    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ), PostReplies AS ( SELECT r.OriginalPostID, COUNT(r.ReplyPostID) AS TotalReplies FROM Replies r GROUP BY r.OriginalPostID ), PostTags AS ( Select it.PostID, json_arrayagg(it.Tag) AS IncludedTags From IncludesTag it group by it.PostID ), PollVotes AS ( Select v.PostID, sum(if(Choice = 1, 1, 0)) as VotesFor1, sum(if(Choice = 2, 1, 0)) as VotesFor2 From Vote v group by v.PostID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, p.ShortLinkID, pl.TotalLikes, pr.TotalReplies, r2.OriginalPostID, pt.IncludedTags, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser, u.OriginalURL, pl.Title, pl.Option1Text, pl.Option2Text, pv.VotesFor1, pv.VotesFor2, v.Choice as SecondUserChoice FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN PostReplies pr ON p.ID = pr.OriginalPostID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? LEFT JOIN Replies r2 ON p.ID = r2.ReplyPostID LEFT JOIN PostTags pt ON p.ID = pt.PostID LEFT JOIN URLSHORTENER u ON p.ShortLinkID = u.ID LEFT JOIN POLL pl ON p.ID = pl.PostID LEFT JOIN PollVotes pv ON p.ID = pv.PostID LEFT JOIN Vote v ON p.ID = v.PostID and v.Username = ? WHERE p.PosterUsername = ?;', [username, username, req.params.username],
+    'WITH PostLikes AS ( SELECT p.ID, COUNT(l.PostID) AS TotalLikes FROM POST p LEFT JOIN Likes l ON p.ID = l.PostID GROUP BY p.ID ) SELECT p.ID, p.Contents, p.CreatedTime, p.PosterUsername, pl.TotalLikes, CASE WHEN l2.PostID IS NOT NULL THEN 1 ELSE 0 END AS LikedBySecondUser FROM POST p LEFT JOIN PostLikes pl ON p.ID = pl.ID LEFT JOIN Likes l2 ON p.ID = l2.PostID AND l2.Username = ? WHERE p.PosterUsername = ?;', [username, req.params.username],
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -61,22 +61,23 @@ router.get('/api/account/:username', (req, res, next) => {
       }
     });
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.params.username,
+    'SELECT USER.Username, Birthday, Description, Location FROM USER WHERE USER.Username = ?', req.params.username,
     (err, rows) => {
       // Checks if user exists
       if (err) {
         console.error(err)
         res.send("Username not found")
       } else if (rows.length == 0) {
-        res.send("Username not found")
+            res.status(400).json({ msg: "User Does Not Exist" });
       } else {
-        console.log(rows[0])
-        res.json({user: rows[0], posts: posts.reverse(), simpleIsLogged: isAuthBool(req)})
+        console.log(rows)
+        res.json({user: rows[0], posts: posts.reverse(), simpleIsLogged: isAuthBool(req)});
       }
     }
   )
 })
 
+// Get all users ordered by total number of likes on their posts
 router.get('/api/accounts', (req, res, next) => {
   dbHelper.mediaConnection.query('SELECT USER.Username, COUNT(Likes.PostID) AS TotalLikes FROM USER LEFT JOIN POST ON USER.Username = POST.PosterUsername LEFT JOIN Likes ON POST.ID = Likes.PostID GROUP BY USER.Username ORDER BY TotalLikes DESC;', 
   (err, result) => {

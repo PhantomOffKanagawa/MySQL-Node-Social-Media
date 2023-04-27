@@ -18,11 +18,8 @@ const Account = (props) => {
   });
   const navigate = useNavigate();
 
-  let count = 0;
   const { username } = useParams();
   useEffect(() => {
-    if (count != 0) return;
-    count++;
     axios
       .get("/api/account/" + username)
       .then((res) => {
@@ -32,13 +29,13 @@ const Account = (props) => {
         console.log(JSON.stringify(user));
       })
       .catch((err) => {
-        alert("You aren't logged in");
+        alert(err.response.data.msg);
         navigate("/login");
       });
   }, []);
 
   const postList =
-    posts.length === 0 ? (
+    (typeof posts == 'undefined' || posts.length === 0) ? (
       <h3 className="text-center m-auto my-5 align-items-center align-self-center align-middle">
         There are no posts
       </h3>
@@ -56,7 +53,7 @@ const Account = (props) => {
           <div className="col-lg-4">
             <div className="card mb-4">
               <div className="card-body text-center">
-                <h5 className="my-3">{user.Username}</h5>
+                <h5 className="my-3">{typeof user != undefined ? user.Username : "N/A"}</h5>
                 <p className="text-muted mb-4 editable" id="locationStatic">
                   {user.Location == null ? "N/A" : user.Location}
                 </p>

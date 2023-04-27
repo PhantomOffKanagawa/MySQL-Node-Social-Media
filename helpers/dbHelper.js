@@ -64,8 +64,7 @@ function newPost(contents, createdTime, posterUsername) {
     mediaConnection.query('INSERT INTO POST SET ?', {
       Contents: contents,
       CreatedTime: createdTime,
-      PosterUsername: posterUsername,
-      ShortLinkID: null
+      PosterUsername: posterUsername
     }, function (err, result) {
 
       if (err) console.log(err)

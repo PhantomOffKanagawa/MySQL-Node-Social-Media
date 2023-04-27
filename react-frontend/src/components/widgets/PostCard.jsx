@@ -41,12 +41,12 @@ const PostCard = (props) => {
 
         <div className="card-footer position-relative">
         <span>
-            <button type="button" className="btn btn-sm btn-outline-danger btn-floating mx-1" data-mdb-ripple-color="#ffffff">
+            <button type="button" className="btn btn-sm btn-outline-danger btn-floating mx-1" data-mdb-ripple-color="#ffffff" onClick={like}>
                 { post.LikedBySecondUser == 0 &&
-                <i className="fa-regular fa-heart" onClick={like}></i>
+                <i className="fa-regular fa-heart"></i>
                 }
                 {post.LikedBySecondUser == 1 &&
-                <i className="fa-solid fa-heart" onClick={like}></i>
+                <i className="fa-solid fa-heart"></i>
                 }
             </button>
         <span className="badge badge-primary bg-danger mx-1">{post.TotalLikes}</span>
