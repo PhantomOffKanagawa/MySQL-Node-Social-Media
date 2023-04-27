@@ -97,7 +97,6 @@ To start the web server with nodemon run
 - `index.js` the main Node.js file that calls in helpers and starts the express server
 - `package-lock.json` full package info
 - `package.json` overall package info
-- `Phase 3 ERD Diagram in DBML.md` DBML for ERD Diagram of the table **TODO** UPDATE
 - `README.md` *this*
 
 `ls ./helpers` is a folder of Node.js helper modules
@@ -109,10 +108,9 @@ To start the web server with nodemon run
 
 `ls ./sql` is a folder with all the SQL files
 - `minified` contains copies of some of the files in `./sql` but in a one line to allow running from file
-- `Queries.sql` contains the SQL Queries for many of the function calls **TODO UPDATE**
+- `Queries.sql` contains the SQL Queries for many of the function calls
 - `ResetTables.sql` contains the SQL to reset the tables
 - `SQLinserts.sql` contains synthetic data inserts
-- `Worksheet.sql` was a file used as scratch paper when developing SQL Queries
 
 `ls ./views` contains the ejs files used for client side rendering
 - `widgets` contains smaller ejs components used in other ejs files
