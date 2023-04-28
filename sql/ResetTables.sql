@@ -5,14 +5,33 @@ use socialMedia;
 create table USER ( -- Simple Table
 	Username varchar(255) not null, -- pk
 	CreatedTime varchar(26) not null,
-    Birthday date,
-    Description varchar(255),
-    Location varchar(255),
     Hash varchar(200) not null,
     Salt varchar(100) not null,
 	primary key (Username)
 );
 
+-- Seperate table as can be null
+create table Birthday ( -- Simple Table
+    Username varchar(255) not null, --fk
+    Birthday date not null,
+    FOREIGN KEY (Username) REFERENCES USER(Username)
+);
+
+-- Seperate table as can be null
+create table Description ( -- Simple Table
+    Username varchar(255) not null, --fk
+    Description varchar(255) not null,
+    FOREIGN KEY (Username) REFERENCES USER(Username)
+);
+
+-- Seperate table as can be null
+create table Location ( -- Simple Table
+    Username varchar(255) not null, --fk
+    Location varchar(255) not null,
+    FOREIGN KEY (Username) REFERENCES USER(Username)
+);
+
+-- Seperate table as can be null and multi-value
 create table ExternalLinks ( -- Multi-value Attribute
     Username varchar(255) not null, -- fk
     Link varchar(40) unique not null,

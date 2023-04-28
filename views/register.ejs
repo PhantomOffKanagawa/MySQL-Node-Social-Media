@@ -4,13 +4,13 @@
     <div class="col-lg-3 mx-auto">
         <form action="/register" method="POST">
             <div class="mb-4">
-                <label for="username" class="form-label" pattern="^[-a-zA-Z0-9@:%._\+~#=]*$">Username</label>
-                <input type="text" required; class="form-control" name="username" placeholder="Username" required>
+                <label for="username" class="form-label">Username</label>
+                <input type="text" pattern="^[-a-zA-Z0-9@:%._\+~#=]*$" class="form-control" name="username" placeholder="Username" required>
                 <span class="help-block">Letters, Numbers and "@:%._\+~#=" only</span>
             </div>
             <div class="mb-2">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" required; class="form-control" name="password" placeholder="Password" required>
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
             </div>
             <button type="submit" class="btn btn-primary mt-2 mb-4">Submit</button>
             <p>Already a member? <a href="/login">Login</a></p>
