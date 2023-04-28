@@ -11,9 +11,16 @@ router.use(passport.session())
 
 // Landing Page
 router.get('/', (req, res) => {
-  res.render('index.ejs', {
-    title: 'Home',
-    simpleIsLogged: isAuthBool(req)
+  dbHelper.mediaConnection.query('SELECT USER.Username, COUNT(Likes.PostID) AS TotalLikes FROM USER LEFT JOIN POST ON USER.Username = POST.PosterUsername LEFT JOIN Likes ON POST.ID = Likes.PostID GROUP BY USER.Username ORDER BY TotalLikes DESC;', 
+  (err, result) => {
+    if (err) console.log(err);
+    else {
+      res.render('index.ejs', {
+        title: 'Home',
+        simpleIsLogged: isAuthBool(req),
+        accounts: result
+      })
+    }
   })
 })
 

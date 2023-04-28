@@ -6,9 +6,9 @@ const NUM_USERS = 20
 const NUM_POSTS = 100
 const NUM_TAGS = 5
 
-const BDAY_CHANCE = 0.6
-const DESC_CHANCE = 0.2
-const LOC_CHANCE = 0.4
+const BDAY_CHANCE = 0.7
+const DESC_CHANCE = 0.7
+const LOC_CHANCE = 0.7
 
 const LIKE_CHANCE = 0.4
 const VOTE_CHANCE = 0.4
@@ -225,6 +225,7 @@ function generateVotes (users, posts) {
 }
 
 function writeToSQL (fname, tableName, data, minifyfname) {
+  if (data.length == 0) return;
   const tominify = typeof minifyfname == 'undefined' ? false : true
 
   const firstLine = `\n\n-- Insert Statements for ${tableName}\ninsert into ${tableName} (${
