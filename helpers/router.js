@@ -48,7 +48,7 @@ router.get('/myaccount', isAuth, (req, res, next) => {
     });
   // get relvent user information including external links
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.session.passport.user,
+    'SELECT USER.Username, b.Birthday, d.Description, l.Location, el.Link FROM USER LEFT JOIN Birthday b ON USER.Username = b.Username LEFT JOIN Description d ON USER.Username = d.Username LEFT JOIN Location l ON USER.Username = l.Username LEFT JOIN ExternalLinks el ON USER.Username = el.Username WHERE USER.Username = ?', req.session.passport.user,
     (err, rows) => {
       if (err) throw console.error(err)
       if (!err) {
@@ -81,7 +81,7 @@ router.get('/account/:username', (req, res, next) => {
       }
     });
   dbHelper.mediaConnection.query(
-    'SELECT USER.Username, Birthday, Description, Location, ExternalLinks.Link FROM USER LEFT JOIN ExternalLinks ON USER.Username = ExternalLinks.Username WHERE USER.Username = ?', req.params.username,
+    'SELECT USER.Username, b.Birthday, d.Description, l.Location, el.Link FROM USER LEFT JOIN Birthday b ON USER.Username = b.Username LEFT JOIN Description d ON USER.Username = d.Username LEFT JOIN Location l ON USER.Username = l.Username LEFT JOIN ExternalLinks el ON USER.Username = el.Username WHERE USER.Username = ?', req.params.username,
     (err, rows) => {
       // Checks if user exists
       if (err) {
@@ -238,9 +238,6 @@ router.post('/register', userExists, (req, res, next) => {
   dbHelper.insertUser(
     req.body.username,
     new Date().toISOString(),
-    null,
-    null,
-    null,
     saltHash.hash,
     saltHash.salt
   )

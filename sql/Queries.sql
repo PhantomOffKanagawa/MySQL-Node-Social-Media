@@ -119,3 +119,11 @@ WHERE r.OriginalPostID = '1'
 -- Sort by ordering (keeps selected post above its replies and total likes)
 ORDER BY ordering, TotalLikes DESC;
 
+-- Get a user's information
+SELECT USER.Username, b.Birthday, d.Description, l.Location, el.Link
+FROM USER
+LEFT JOIN Birthday b ON USER.Username = b.Username
+LEFT JOIN Description d ON USER.Username = d.Username
+LEFT JOIN Location l ON USER.Username = l.Username
+LEFT JOIN ExternalLinks el ON USER.Username = el.Username
+WHERE USER.Username = ?

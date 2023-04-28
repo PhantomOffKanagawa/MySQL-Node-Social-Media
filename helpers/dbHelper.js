@@ -10,13 +10,10 @@ const mediaConnection = mysql2.createConnection({
 })
 
 // Function for inserting new user
-function insertUser(username, createdTime, birthday, description, location, hash, salt) {
+function insertUser(username, createdTime, hash, salt) {
   mediaConnection.query('INSERT INTO USER SET ?', {
     Username: username,
     CreatedTime: createdTime,
-    Birthday: birthday,
-    Description: description,
-    Location: location,
     Hash: hash,
     Salt: salt
   }, function (err, result) {
@@ -38,24 +35,34 @@ function removeUser(username) {
 
 // Function to change a user's details, used by edit
 function updateUser(username, birthday, description, location) {
-  // Array of SQL line parts for updating the user
-  const updateString = [
-      birthday != '' ? `Birthday='${birthday}'` : '',
-      description != '' ? `Description='${description}'` : '',
-      location != '' ? `Location='${location}'` : ''
-    ]
-    .filter(Boolean)
-    .join(', ')
-
-  if (updateString == '') return
+  if (birthday != '')
   mediaConnection.query(
-    'UPDATE USER SET ' + updateString + ' WHERE Username=?',
-    username,
+    'Replace into Birthday SET ?', {Username: username, Birthday: birthday},
     function (err, result) {
       if (err) console.log(err.message)
       return true
     }
-  )
+  );
+
+  if (description != '')
+  mediaConnection.query(
+    'Replace into Description SET ?', {Username: username, Description: description},
+    function (err, result) {
+      if (err) console.log(err.message)
+      return true
+    }
+  );
+
+  if (location != '')
+  mediaConnection.query(
+    'Replace into Location SET ?', {Username: username, Location: location},
+    function (err, result) {
+      if (err) console.log(err.message)
+      return true
+    }
+  );
+
+
 }
 
 // Function to attach a ExternalLink to a user
@@ -65,8 +72,7 @@ function addLink(username, linkStr) {
     Link: linkStr
   }
   mediaConnection.query('INSERT INTO ExternalLinks SET ?', link, function (err, result) {
-    if (err) return false
-    return true
+    if (err) console.log(err)
   })
 }
 
