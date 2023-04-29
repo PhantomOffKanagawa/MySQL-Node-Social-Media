@@ -1,7 +1,7 @@
 <li class="align-items-center d-flex justify-content-between list-group-item p-3">
     <i class="fa-globe fa-lg fas text-muted"></i>
     <p align-middle class="mb-0">
-        <%= link %>
+        <a href="<%= link %>"><%= link %></a>
         <% if(editable) {%>
         <button type="button" onclick="$.post({url:'/linkRemove',data:{link:'<%- link %>'}});location.reload();"
             class="small btn btn-link btn-floating link-remove-button" data-mdb-ripple-color="#ffffff"
